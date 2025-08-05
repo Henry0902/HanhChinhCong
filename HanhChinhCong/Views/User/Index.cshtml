@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/UserJs.js"></script>
+
+<div class="row" ng-controller="UserJs">
+
+    <h2>{{message}}</h2>
+    
+    <div class="col-md-6">
+        <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tên cán bộ" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">Thêm</button>
+        </form>
+
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">Chuc Nang</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <th>{{$index + 1}}</th>
+                <td>{{item.HoTen}}</td>
+                <td>{{item.VaiTroText}}</td>
+                <td>
+                    <!-- Không cần viết jQuery luôn -->
+                    <button type="button" class="btn btn-warning" ng-click="editUser(item, $index)" data-bs-toggle="modal" data-bs-target="#myModal">Sửa</button>
+                    <button type="button" class="btn btn-danger">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    @*Modal Thêm người dùng*@
+    @*<button id="openModalBtn" class="btn btn-primary">Open Modal</button>*@
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{editingUser ? 'Sửa cán bộ' : 'Thêm mới cán bộ'}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                    <form name="userForm" class="row g-3 needs-validation" novalidate>
+                        <div class="col-md-6">
+                            <label for="Hoten" class="form-label">Họ tên </label>
+                            <input type="text" class="form-control" id="HoTen" value="" required>
+                            <div class="invalid-feedback">
+                                Vui lòng điền họ tên.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="VaiTro" class="form-label">Vai trò</label>
+                            <select class="form-control ng-pristine" ng-model="selectedRole"
+                                    ng-options="option.value as option.label for option in listRoles">
+                                <option value="" selected>-- Chọn vai trò --</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Vui lòng chọn vai trò.
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="UserName" class="form-label">UserName</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control" id="UserName" aria-describedby="inputGroupPrepend" required>
+                                <div class="invalid-feedback">
+                                    Vui lòng điền username.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="PassWord" class="form-label">PassWord</label>
+                            <div class="input-group has-validation">
+                                <input type="password" class="form-control" id="PassWord" required>
+                                <div class="invalid-feedback">
+                                    Vui lòng điền password.
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="addUser()">Submit form</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
