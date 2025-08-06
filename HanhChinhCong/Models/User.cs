@@ -15,4 +15,14 @@ namespace HanhChinhCong.Models
         public string UserName { get; set; }
         public string PassWord { get; set; }
     }
+
+    public class UserViewModel
+    {
+        public int Id { get; set; }
+        public string HoTen { get; set; }
+        public string VaiTroText { get; set; }
+        public string UserName { get; set; }
+        // Thêm các trường khác nếu cần
+    }
+
 }

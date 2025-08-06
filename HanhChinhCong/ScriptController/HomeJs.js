@@ -34,7 +34,7 @@
 
     init();
 
-    $scope.addUser = function () {
+    $scope.addModal = function () {
         $http({
             url: "/Home/Create",
             method: "POST",

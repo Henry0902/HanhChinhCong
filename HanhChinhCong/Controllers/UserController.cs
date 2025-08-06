@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using HanhChinhCong.Models;
+using System.Configuration;
+using System.Data;
 
 namespace HanhChinhCong.Controllers
 {
@@ -68,6 +70,24 @@ namespace HanhChinhCong.Controllers
             }
             return Json(new { success = false });
         }
+
+        [HttpGet]
+        public JsonResult GetPagedUsers(string searchName, int page = 1, int pageSize = 5)
+        {
+            var repo = new UserRepository();
+            int totalRows;
+            var users = repo.SearchUsersWithPaging(searchName, page, pageSize, out totalRows);
+
+            return Json(new
+            {
+                data = users,
+                totalRows = totalRows,
+                page = page,
+                pageSize = pageSize
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
 
 
 

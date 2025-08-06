@@ -100,10 +100,10 @@
                 <li>
                     <a href="javascript: void(0);"> <i data-feather="home" class="align-self-center menu-icon"></i><span>Dashboard</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                     <ul class="nav-second-level" aria-expanded="false">
-                        <li class="nav-item">@Html.ActionLink("About", "About", "Home")</li>
-                        <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home")</li>
-                        <li class="nav-item"><a class="nav-link" href="index.html"><i class="ti-control-record"></i>Analytics</a></li>
-                        <li class="nav-item"><a class="nav-link" href="sales-index.html"><i class="ti-control-record"></i>Sales</a></li>
+                        <li class="nav-item">@Html.ActionLink("Người dùng", "Index", "User")</li>
+                        <li class="nav-item">@Html.ActionLink("Lĩnh vực", "Index", "LinhVuc")</li>
+                        <li class="nav-item">@Html.ActionLink("Loại hồ sơ", "Index", "LoaiHoSo")</li>
+                        <li class="nav-item">@Html.ActionLink("Phòng ban", "Index", "PhongBan")</li>
                     </ul>
                 </li>
                 @*<li class="menu-label mt-0">Main</li>
@@ -483,6 +483,7 @@
     @*<script src="../plugins/apex-charts/apexcharts.min.js"></script>
         <script src="../plugins/jvectormap/jquery-jvectormap-2.0.2.min.js"></script>
         <script src="../plugins/jvectormap/jquery-jvectormap-us-aea-en.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="~/assets/pages/jquery.analytics_dashboard.init.js"></script>
 
     <!-- App js -->

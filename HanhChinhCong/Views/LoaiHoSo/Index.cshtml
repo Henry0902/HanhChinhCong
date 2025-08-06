@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/LoaiHoSoJs.js"></script>
+
+<div class="row" ng-controller="LoaiHoSoJs">
+
+    <h2>{{message}}</h2>
+
+    <div class="col-md-6">
+        <form method="get" action="@Url.Action("Index", "User")" class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tên cán bộ" ng-model="searchName" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Search</button>
+            <button type="button" class="btn btn-success" ng-click="openAddModal()">Thêm</button>
+        </form>
+
+
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên Loại Hồ Sơ</th>
+                <th>Lĩnh Vực</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.TenLoaiHoSo}}</td>
+                <td>{{item.TenLinhVuc}}</td>
+                <td>
+                    <button class="btn btn-warning" ng-click="editLoaiHoSo(item, $index)">Sửa</button>
+                    <button class="btn btn-danger" ng-click="deleteLoaiHoSo(item.IdLoaiHoSo)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    @*Modal Thêm *@
+    @*<button id="openModalBtn" class="btn btn-primary">Open Modal</button>*@
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{editingUser ? 'Sửa tên loại hồ sơ' : 'Thêm mới loại hồ sơ'}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                    <form name="loaiHoSoForm" class="row g-3 needs-validation" novalidate>
+                        <div class="col-md-6">
+                            <label for="TenLoaiHoSo" class="form-label">Tên loại hồ sơ </label>
+                            <input type="text" class="form-control" id="TenLoaiHoSo" value="" required>
+                            <div class="invalid-feedback">
+                                Vui lòng điền tên loại hồ sơ.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="VaiTro" class="form-label">Lĩnh vực</label>
+                            <select class="form-control"
+                                    ng-model="selectedLinhVuc"
+                                    ng-options="lv.Id as lv.TenLinhVuc for lv in listLinhVuc">
+                                <option value="">-- Chọn lĩnh vực --</option>
+                            </select>
+
+                            <div class="invalid-feedback">
+                                Vui lòng chọn lĩnh vực.
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="addModal()">Submit form</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,13 @@
 ﻿app.controller('UserJs', function ($scope, $http, AlertService) {
     $scope.message = "Chào mừng bạn đến với Phần mềm hành chính công";
+
+    $scope.searchName = '';
+    $scope.page = 1;
+    $scope.pageSize = 5;
+    $scope.totalRows = 0;
+    $scope.totalPages = 1;
+
+
     $scope.listRoles = [
         { value: 0, label: 'Admin' },
         { value: 1, label: 'Cán bộ tiếp nhận' },
@@ -49,7 +57,7 @@
         // $('#myModal').modal('show');
     };
 
-    $scope.addUser = function () {
+    $scope.addModal = function () {
         var form = document.forms['userForm'];
         if (!form.checkValidity()) {
             form.classList.add('was-validated');
@@ -100,17 +108,6 @@
     };
 
 
-
-
-
-
-
-
-
-
-
-
-
     $('#myModal').on('hidden.bs.modal', function () {
         // Reset form
         document.forms['userForm'].reset();
@@ -123,4 +120,32 @@
     });
 
 
+    $scope.loadUsers = function () {
+        $http.get('/User/GetPagedUsers', {
+            params: {
+                searchName: $scope.searchName,
+                page: $scope.page,
+                pageSize: $scope.pageSize
+            }
+        }).then(function (res) {
+            $scope.listData = res.data.data;
+            $scope.totalRows = res.data.totalRows;
+            $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
+        });
+    };
+
+    $scope.search = function () {
+        $scope.page = 1;
+        $scope.loadUsers();
+    };
+
+    $scope.goToPage = function (p) {
+        if (p >= 1 && p <= $scope.totalPages) {
+            $scope.page = p;
+            $scope.loadUsers();
+        }
+    };
+
+    // Initial load
+    $scope.loadUsers();
 });

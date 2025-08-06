@@ -7,13 +7,14 @@
 <div class="row" ng-controller="UserJs">
 
     <h2>{{message}}</h2>
-    
+
     <div class="col-md-6">
-        <form class="d-flex justify-content-end gap-2">
-            <input class="form-control" type="search" placeholder="Nhập tên cán bộ" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+        <form method="get" action="@Url.Action("Index", "User")" class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tên cán bộ" ng-model="searchName" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Search</button>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">Thêm</button>
         </form>
+
 
     </div>
     <table class="table">
@@ -22,25 +23,39 @@
                 <th scope="col">STT</th>
                 <th scope="col">Name</th>
                 <th scope="col">Role</th>
-                <th scope="col">Chuc Nang</th>
+                <th scope="col">Chức Năng</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in listData">
-                <th>{{$index + 1}}</th>
+                <th>{{$index + 1 + (page - 1) * pageSize}}</th>
                 <td>{{item.HoTen}}</td>
                 <td>{{item.VaiTroText}}</td>
                 <td>
-                    <!-- Không cần viết jQuery luôn -->
                     <button type="button" class="btn btn-warning" ng-click="editUser(item, $index)" data-bs-toggle="modal" data-bs-target="#myModal">Sửa</button>
-                    <button type="button" class="btn btn-danger">Xóa</button>
+                    <button type="button" class="btn btn-danger" ng-click="deleteUser(item.Id)">Xóa</button>
                 </td>
             </tr>
         </tbody>
+
     </table>
 
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
 
-    @*Modal Thêm người dùng*@
+
+    @*Modal Thêm *@
     @*<button id="openModalBtn" class="btn btn-primary">Open Modal</button>*@
     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -95,10 +110,11 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" ng-click="addUser()">Submit form</button>
+                    <button class="btn btn-primary" type="button" ng-click="addModal()">Submit form</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
                 </div>
+
             </div>
         </div>
     </div>

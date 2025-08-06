@@ -127,14 +127,24 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\LinhVucController.cs" />
+    <Compile Include="Controllers\LoaiHoSoController.cs" />
+    <Compile Include="Controllers\PhongBanController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DbConnectContext.cs" />
+    <Compile Include="Models\LinhVuc.cs" />
+    <Compile Include="Models\LoaiHoSo.cs" />
+    <Compile Include="Models\PhongBan.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\LinhVucRepository.cs" />
+    <Compile Include="Repositories\PhongBanRepository.cs" />
+    <Compile Include="Repositories\LoaiHoSoRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\css\app.min.css" />
@@ -291,6 +301,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="ScriptController\LinhVucJs.js" />
+    <Content Include="ScriptController\LoaiHoSoJs.js" />
+    <Content Include="ScriptController\PhongBanJs.js" />
     <Content Include="ScriptController\UserJs.js" />
     <Content Include="ScriptController\HomeJs.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -377,10 +390,12 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\LinhVuc\Index.cshtml" />
+    <Content Include="Views\LoaiHoSo\Index.cshtml" />
+    <Content Include="Views\PhongBan\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

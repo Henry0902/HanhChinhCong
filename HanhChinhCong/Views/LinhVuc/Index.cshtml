@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Quản lý lĩnh vực";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/LinhVucJs.js"></script>
+
+<div class="row" ng-controller="LinhVucJs">
+    <h2>{{message}}</h2>
+    <div class="col-md-6">
+        <form method="get" action="@Url.Action("Index", "LinhVuc")" class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tên lĩnh vực" ng-model="searchName" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Search</button>
+            <button type="button" class="btn btn-success" ng-click="openAddModal()">Thêm</button>
+
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên lĩnh vực</th>
+                <th>Phòng ban</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.TenLinhVuc}}</td>
+                <td>{{item.TenPhongBan}}</td>
+                <td>
+                    <button class="btn btn-warning" ng-click="editLinhVuc(item, $index)" data-bs-toggle="modal" data-bs-target="#myModal">Sửa</button>
+                    <button class="btn btn-danger" ng-click="deleteLinhVuc(item.Id)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Modal Thêm/Sửa lĩnh vực -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{editingLinhVuc ? 'Sửa lĩnh vực' : 'Thêm mới lĩnh vực'}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="linhVucForm" class="row g-3 needs-validation" novalidate>
+                        <div class="col-md-12">
+                            <label for="TenLinhVuc" class="form-label">Tên lĩnh vực</label>
+                            <input type="text" class="form-control" id="TenLinhVuc" value="" required>
+                            <div class="invalid-feedback">
+                                Vui lòng điền tên lĩnh vực.
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="IdPhongBan" class="form-label">Phòng ban</label>
+                            <select class="form-control" ng-model="selectedPhongBan" ng-options="pb.Id as pb.TenPhongBan for pb in listPhongBan">
+                                <option value="">-- Chọn phòng ban --</option>
+                            </select>
+
+                            <div class="invalid-feedback">
+                                Vui lòng điền phòng ban.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="addModal()">Submit form</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

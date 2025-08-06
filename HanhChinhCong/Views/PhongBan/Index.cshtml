@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Quản lý phòng ban";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/PhongBanJs.js"></script>
+
+<div class="row" ng-controller="PhongBanJs">
+    <h2>{{message}}</h2>
+    <div class="col-md-6">
+        <form method="get" action="@Url.Action("Index", "PhongBan")" class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tên phòng ban" ng-model="searchName" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Search</button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">Thêm</button>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên phòng ban</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.TenPhongBan}}</td>
+                <td>
+                    <button class="btn btn-warning" ng-click="editPhongBan(item, $index)" data-bs-toggle="modal" data-bs-target="#myModal">Sửa</button>
+                    <button class="btn btn-danger" ng-click="deletePhongBan(item.Id)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Modal Thêm/Sửa phòng ban -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{editingPhongBan ? 'Sửa phòng ban' : 'Thêm mới phòng ban'}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="phongBanForm" class="row g-3 needs-validation" novalidate>
+                        <div class="col-md-12">
+                            <label for="TenPhongBan" class="form-label">Tên phòng ban</label>
+                            <input type="text" class="form-control" id="TenPhongBan" value="" required>
+                            <div class="invalid-feedback">
+                                Vui lòng điền tên phòng ban.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="addModal()">Submit form</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
