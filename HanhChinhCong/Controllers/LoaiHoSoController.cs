@@ -28,6 +28,16 @@ namespace HanhChinhCong.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public JsonResult GetLoaiHoSoByLinhVuc(int idLinhVuc)
+        {
+            using (var context = new DbConnectContext())
+            {
+                var loaiHoSos = context.LoaiHoSo.Where(x => x.IdLinhVuc == idLinhVuc).ToList();
+                return Json(loaiHoSos, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpPost]
         public JsonResult AddLoaiHoSo(LoaiHoSo loaiHoSo)
         {

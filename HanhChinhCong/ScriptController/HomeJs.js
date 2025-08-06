@@ -1,5 +1,5 @@
 ﻿app.controller('HomeJs', function ($scope, $http, AlertService) {
-    $scope.message = "Chào mừng bạn đến với Phần mềm hành chính công";
+    $scope.message = "Chào mừng đến với Phần mềm Hành chính công";
     const listRoles = [
         { value: 0, label: 'Admin' },
         { value: 1, label: 'Cán bộ tiếp nhận' },

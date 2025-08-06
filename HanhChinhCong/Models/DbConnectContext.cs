@@ -16,5 +16,7 @@ namespace HanhChinhCong.Models
 
         public virtual DbSet<PhongBan> PhongBan { get; set; }
 
+        public virtual DbSet<HoSo> HoSo { get; set; }
+
     }
 }

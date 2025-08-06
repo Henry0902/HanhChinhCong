@@ -48,6 +48,16 @@ namespace HanhChinhCong.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public JsonResult GetLinhVucByPhongBan(int idPhongBan)
+        {
+            using (var context = new DbConnectContext())
+            {
+                var linhVucs = context.LinhVuc.Where(x => x.IdPhongBan == idPhongBan).ToList();
+                return Json(linhVucs, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpPost]
         public JsonResult AddLinhVuc(LinhVuc linhVuc)
         {

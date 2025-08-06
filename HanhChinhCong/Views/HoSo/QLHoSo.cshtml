@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "Quản lý hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/HoSoJs.js"></script>
+
+<div class="row" ng-controller="HoSoJs">
+    <h2 class="text-center">Quản lý hồ sơ hành chính công</h2>
+    <div class="col-md-12 mb-3">
+        <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#hoSoModal">Thêm mới</button>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã hồ sơ</th>
+                <th>Tiêu đề</th>
+                <th>Ngày tiếp nhận</th>
+                <th>Người nộp</th>
+                <th>Số điện thoại</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.MaHoSo}}</td>
+                <td>{{item.NgayTiepNhan | date:'dd/MM/yyyy'}}</td>
+                <td>{{item.TenCongDan}}</td>
+                <td>{{item.SoDienThoai}}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" ng-click="editHoSo(item)">Sửa</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteHoSo(item.Id)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Thêm/Sửa hồ sơ -->
+    <div class="modal fade" id="hoSoModal" tabindex="-1" aria-labelledby="hoSoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="hoSoForm" class="needs-validation" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hoSoModalLabel">Thêm/Sửa hồ sơ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label">Mã hồ sơ</label>
+                            <input type="text" class="form-control" ng-model="editingHoSo.MaHoSo" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Tiêu đề</label>
+                            <input type="text" class="form-control" ng-model="editingHoSo.TieuDe" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" ng-model="editingHoSo.MoTa"></textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Ngày tiếp nhận</label>
+                            <input type="date" class="form-control" ng-model="editingHoSo.NgayTiepNhan" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Tên người nộp</label>
+                            <input type="text" class="form-control" ng-model="editingHoSo.TenCongDan" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" ng-model="editingHoSo.SoDienThoai">
+                        </div>
+                        <!-- Thêm các trường khác nếu cần -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button"
+                                ng-click="editingHoSo.Id ? editHoSo(editingHoSo) : addHoSo(editingHoSo)">
+                            Lưu
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
