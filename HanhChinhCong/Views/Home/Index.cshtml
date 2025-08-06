@@ -6,26 +6,5 @@
 
 <div class="row" ng-controller="HomeJs">
     <h2>{{message}}</h2>
-    
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">STT</th>
-                <th scope="col">Name</th>
-                <th scope="col">Role</th>
-                <th scope="col">Chuc Nang</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="item in listData">
-                <th>{{$index + 1}}</th>
-                <td>{{item.HoTen}}</td>
-                <td>{{item.VaiTroText}}</td>
-                <td>
-                    <button type="button" class="btn btn-success" ng-click="addModal()">Danger</button>
-                    <button type="button" class="btn btn-warning">Warning</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+   
 </div>

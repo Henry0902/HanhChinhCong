@@ -184,6 +184,7 @@
     <Content Include="assets\images\error.svg" />
     <Content Include="assets\images\favicon.ico" />
     <Content Include="assets\images\logo-dark.png" />
+    <Content Include="assets\images\logo-dvc.png" />
     <Content Include="assets\images\logo-sm-dark.png" />
     <Content Include="assets\images\logo-sm.png" />
     <Content Include="assets\images\logo.png" />
