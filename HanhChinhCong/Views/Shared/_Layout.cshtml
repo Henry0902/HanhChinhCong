@@ -81,6 +81,11 @@
 </head>
 
 <body class="">
+    <!-- Alert notification -->
+    <div ng-if="alert.show" class="alert alert-{{alert.type}} alert-dismissible fade show" role="alert" style="position:fixed;top:20px;right:20px;z-index:9999;">
+        {{alert.message}}
+        <button type="button" class="btn-close" ng-click="alert.show=false"></button>
+    </div>
     <!-- Left Sidenav -->
     <div class="left-sidenav">
         <!-- LOGO -->
@@ -436,7 +441,7 @@
                             <i data-feather="menu" class="align-self-center topbar-icon"></i>
                         </button>
                     </li>
-                   
+
 
                 </ul>
             </nav>
