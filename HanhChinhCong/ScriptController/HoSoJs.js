@@ -12,6 +12,9 @@
     $scope.hoSo = {};
     $scope.hoSo.NgayTiepNhan = new Date().toISOString().slice(0, 10);
 
+    $scope.searchTenCongDan = '';
+    $scope.searchCMND_CCCD = '';
+
     //lấy danh sách phòng ban
     $scope.loadPhongBan = function () {
         $http.get('/PhongBan/GetList').then(function (res) {

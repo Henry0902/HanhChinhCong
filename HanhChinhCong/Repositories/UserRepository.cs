@@ -14,7 +14,7 @@ public class UserRepository
         connectionString = ConfigurationManager.ConnectionStrings["DbConnectContext"].ConnectionString;
     }
 
-    public List<UserViewModel> SearchUsersWithPaging(string searchName, int page, int pageSize, out int totalRows)
+    public List<UserViewModel> SearchUsersWithPaging(string searchName, int? searchVaiTro, int page, int pageSize, out int totalRows)
     {
         var users = new List<UserViewModel>();
         totalRows = 0;
@@ -24,6 +24,8 @@ public class UserRepository
         {
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
+            cmd.Parameters.AddWithValue("@SearchVaiTro", (object)searchVaiTro ?? DBNull.Value);
+
             cmd.Parameters.AddWithValue("@PageNumber", page);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
 
@@ -37,8 +39,8 @@ public class UserRepository
                     {
                         Id = Convert.ToInt32(reader["Id"]),
                         HoTen = reader["HoTen"].ToString(),
-                        VaiTroText = reader["VaiTroText"].ToString(),
-                        UserName = reader["UserName"].ToString()
+                        VaiTro = Convert.ToInt32(reader["VaiTro"]),
+                        //UserName = reader["UserName"].ToString()
                     });
                 }
                 // Second result: total count
@@ -51,5 +53,29 @@ public class UserRepository
 
         return users;
     }
+
+    public List<UserInfo> GetAllCanBoXuLy(int vaiTro)
+    {
+        var list = new List<UserInfo>();
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_GetAllCanBoXuLy", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@VaiTro", vaiTro);
+            conn.Open();
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new UserInfo
+                {
+                    Id = reader.GetInt32(0),
+                    HoTen = reader.GetString(1),
+                    VaiTro = reader.GetInt32(2)
+                });
+            }
+        }
+        return list;
+    }
+
 
 }

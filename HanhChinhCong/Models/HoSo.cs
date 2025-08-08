@@ -28,6 +28,7 @@ namespace HanhChinhCong.Models
         public string DiaChi { get; set; }
         public string Email { get; set; }
 
+        public int? IdCanBoXuLy { get; set; }
 
     }
 
@@ -42,6 +43,7 @@ namespace HanhChinhCong.Models
         public DateTime? NgayHoanThanh { get; set; }
         public string GhiChu { get; set; }
         public int? IdCanBoTiepNhan { get; set; }
+        public int? IdCanBoXuLy { get; set; }
         public int? IdPhongBan { get; set; }
         public int? IdLinhVuc { get; set; }
         public int? IdLoaiHoSo { get; set; }
@@ -56,6 +58,9 @@ namespace HanhChinhCong.Models
         public string TenPhongBan { get; set; }
         public string TenLinhVuc { get; set; }
         public string TenLoaiHoSo { get; set; }
+        public string TenCanBoTiepNhan { get; set; }
+        public string TenCanBoXuLy { get; set; }
+
     }
 
 

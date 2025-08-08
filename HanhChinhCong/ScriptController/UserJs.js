@@ -14,97 +14,69 @@
         { value: 2, label: 'Cán bộ xử lý' },
         { value: 3, label: 'Lãnh đạo' },
     ]
-    //console.log("list role", listRoles)
+    $scope.searchVaiTro = '';
 
     $scope.listData = [];
 
-    var getData = function () {
-        return $http({
-            url: "/User/GetList",
-            method: "GET",
-        }).then(function (res) {
-            $scope.listData = res.data.map(function (user) {
-                let userNew = { ...user };
-                const findRole = $scope.listRoles.filter((role) => user.VaiTro == role.value);
-                userNew.VaiTroText = findRole[0].label;
-                return userNew;
+    //var getData = function () {
+    //    return $http({
+    //        url: "/User/GetList",
+    //        method: "GET",
+    //    }).then(function (res) {
+    //        $scope.listData = res.data.map(function (user) {
+    //            let userNew = { ...user };
+    //            const findRole = $scope.listRoles.filter((role) => user.VaiTro == role.value);
+    //            userNew.VaiTroText = findRole.length > 0 ? findRole[0].label : 'Không xác định';
+    //            return userNew;
+    //        });
+          
+    //    }).catch(function (err) {
+    //        console.log(err);
+    //    });
+    //}
+
+    //getData(); 
+
+    $scope.newUser = {};
+
+    $scope.addUser = function () {
+        // Validate and send $scope.newUser to backend
+        $http.post('/User/AddUser', $scope.newUser)
+            .then(function (response) {
+                if (response.data.success) {
+                    $('#addUserModal').modal('hide');
+                    $scope.newUser = {};
+                    $scope.loadUsers();
+                    AlertService.show('success', 'Thêm mới thành công!');
+                } else {
+                    AlertService.show('danger', 'Thêm mới thất bại!');
+                }
+            }, function (error) {
+                AlertService.show('danger', 'Lỗi máy chủ!');
             });
-            console.log($scope.listData);
-        }).catch(function (err) {
-            console.log(err);
-        });
-    }
-
-    getData(); 
-
-    $scope.editingUser = null;
-    $scope.editingIndex = null;
-
-    $scope.editUser = function (user, index) {
-
-        $scope.selectedRole = '';
-        $scope.editingUser = angular.copy(user);
-        $scope.editingIndex = index;
-
-        $('#HoTen').val(user.HoTen);
-        $scope.selectedRole = user.VaiTro;
-        console.log("ủe", user);
-        console.log("vai tro", $scope.selectedRole);
-        $('#UserName').val(user.UserName);
-        $('#PassWord').val(user.PassWord);
-
-        // Mở modal (nếu không dùng data-bs-toggle)
-        // $('#myModal').modal('show');
     };
 
-    $scope.addModal = function () {
-        var form = document.forms['userForm'];
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
+    $scope.openEditUserModal = function (user, index) {
+        $scope.editingUser = angular.copy(user);
+        $scope.editingIndex = index;
+        $('#editUserModal').modal('show');
+    };
 
-        var userData = {
-            Id: $scope.editingUser ? $scope.editingUser.Id : 0,
-            HoTen: $('#HoTen').val(),
-            VaiTro: $scope.selectedRole,
-            UserName: $('#UserName').val(),
-            PassWord: $('#PassWord').val()
-        };
-
-        if ($scope.editingUser) {
-            // Sửa user
-            $http.post('/User/EditUser', userData)
-                .then(function (response) {
-                    if (response.data.success) {
-                        $('#myModal').modal('hide');
-                        $scope.editingUser = null;
-                        $scope.editingIndex = null;
-                        getData().then(function () {
-                            AlertService.show('success', 'Sửa thành công!');
-                        });
-                    } else {
-                        AlertService.show('danger', 'Sửa thất bại!');
-                    }
-                }, function (error) {
-                    AlertService.show('danger', 'Lỗi máy chủ!');
-                });
-        } else {
-            // Thêm mới user
-            $http.post('/User/AddUser', userData)
-                .then(function (response) {
-                    if (response.data.success) {
-                        $('#myModal').modal('hide');
-                        getData().then(function () {
-                            AlertService.show('success', 'Thêm mới thành công!');
-                        });
-                    } else {
-                        AlertService.show('danger', 'Thêm mới thất bại!');
-                    }
-                }, function (error) {
-                    AlertService.show('danger', 'Lỗi máy chủ!');
-                });
-        }
+    $scope.editUserSubmit = function () {
+        $http.post('/User/EditUser', $scope.editingUser)
+            .then(function (response) {
+                if (response.data.success) {
+                    $('#editUserModal').modal('hide');
+                    $scope.editingUser = null;
+                    $scope.editingIndex = null;
+                    $scope.loadUsers();
+                    AlertService.show('success', 'Sửa thành công!');
+                } else {
+                    AlertService.show('danger', 'Sửa thất bại!');
+                }
+            }, function (error) {
+                AlertService.show('danger', 'Lỗi máy chủ!');
+            });
     };
 
 
@@ -124,11 +96,18 @@
         $http.get('/User/GetPagedUsers', {
             params: {
                 searchName: $scope.searchName,
+                searchVaiTro: $scope.searchVaiTro,
                 page: $scope.page,
                 pageSize: $scope.pageSize
             }
+          
         }).then(function (res) {
-            $scope.listData = res.data.data;
+            $scope.listData = res.data.data.map(function (user) {
+                let userNew = { ...user };
+                const findRole = $scope.listRoles.find(role => user.VaiTro == role.value);
+                userNew.VaiTroText = findRole ? findRole.label : 'Không xác định';
+                return userNew;
+            });
             $scope.totalRows = res.data.totalRows;
             $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
         });

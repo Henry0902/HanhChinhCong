@@ -21,7 +21,17 @@ namespace HanhChinhCong.Controllers
             return View();
         }
 
-        public ActionResult QlHoSo()
+        public ActionResult QuanLyHoSo()
+        {
+            return View();
+        }
+
+        public ActionResult PhanCong()
+        {
+            return View();
+        }
+
+        public ActionResult XuLy()
         {
             return View();
         }
@@ -179,12 +189,101 @@ namespace HanhChinhCong.Controllers
         }
 
         [HttpPost]
+        public JsonResult PhanCongHoSo()
+        {
+            var hoSoId = Convert.ToInt32(Request.Form["hoSoId"]);
+            var userId = Convert.ToInt32(Request.Form["userId"]);
+            var ghiChu = Request.Form["ghiChu"];
+            // Xử lý file
+            var files = Request.Files;
+            var repo = new HoSoRepository();
+            bool success = false;
+
+            // Nếu không có file thì vẫn lưu một bản ghi với FileDinhKem = null
+            if (files == null || files.Count == 0)
+            {
+                success = repo.PhanCongHoSo(hoSoId, userId, ghiChu, null);
+            }
+            else
+            {
+                // Lưu mỗi file một bản ghi
+                for (int i = 0; i < files.Count; i++)
+                {
+                    var file = files[i];
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        var fileName = System.IO.Path.GetFileName(file.FileName);
+                        var savePath = Server.MapPath("~/Uploads/PhanCongHoSo/" + fileName);
+                        file.SaveAs(savePath);
+                        var fileDinhKem = "/Uploads/PhanCongHoSo/" + fileName;
+                        success = repo.PhanCongHoSo(hoSoId, userId, ghiChu, fileDinhKem);
+                    }
+                }
+            }
+
+            // Cập nhật trạng thái hồ sơ sang đã phân công (IdTrangThai = 3)
+            if (success)
+            {
+                using (var context = new DbConnectContext())
+                {
+                    var hoSo = context.HoSo.FirstOrDefault(h => h.Id == hoSoId);
+                    if (hoSo != null)
+                    {
+                        hoSo.IdCanBoXuLy = userId;
+                        hoSo.IdTrangThai = 3;// đã phân công
+                        context.SaveChanges();
+                    }
+                }
+            }
+            return Json(new { Success = success });
+        }
+
+        //Xử lý hồ sơ
+        [HttpPost]
+        public JsonResult XacNhanXuLyHoSo()
+        {
+            try
+            {
+                var hoSoId = Convert.ToInt32(Request.Form["hoSoId"]);
+                var ghiChuXuLy = Request.Form["ghiChuXuLy"];
+                var files = Request.Files;
+                var repo = new HoSoRepository();
+
+                // Cập nhật trạng thái và ghi chú xử lý
+                repo.XacNhanXuLyHoSo(hoSoId, ghiChuXuLy);
+
+                // Lưu file xử lý (nếu có)
+                for (int i = 0; i < files.Count; i++)
+                {
+                    var file = files[i];
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        var fileName = System.IO.Path.GetFileName(file.FileName);
+                        var path = Server.MapPath("~/Uploads/HoSoXuLy/" + fileName);
+                        file.SaveAs(path);
+                        repo.AddFileHoSo(hoSoId, fileName, "/Uploads/HoSoXuLy/" + fileName, "XuLy");
+
+                    }
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
+
+        [HttpPost]
         public JsonResult DeleteHoSo(int id)
         {
             var repo = new HoSoRepository();
             repo.DeleteHoSo(id);
             return Json(new { success = true });
         }
+
 
         private DateTime? ParseDate(string value)
         {

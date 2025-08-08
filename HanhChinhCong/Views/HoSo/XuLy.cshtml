@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "Xử lý hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/XuLyHoSoJs.js"></script>
+
+<div class="row" ng-controller="XuLyHoSoJs">
+    <h2 class="text-center">Xử lý hồ sơ hành chính công</h2>
+    <div class="col-md-12 mb-3">
+        <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
+            <input class="form-control" type="search" placeholder="Tên công dân" ng-model="searchTenCongDan" />
+            <input class="form-control" type="search" placeholder="CMND/CCCD" ng-model="searchCMND_CCCD" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã hồ sơ</th>
+                <th>Tiêu đề</th>
+                <th>Ngày tiếp nhận</th>
+                <th>Người nộp</th>
+                <th>Số điện thoại</th>
+                <th>CMND/CCCD</th>
+                <th>Trạng thái</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.MaHoSo}}</td>
+                <td>{{item.TieuDe}}</td>
+                <td>{{item.NgayTiepNhan | date:'dd/MM/yyyy'}}</td>
+                <td>{{item.TenCongDan}}</td>
+                <td>{{item.SoDienThoai}}</td>
+                <td>{{item.CMND_CCCD}}</td>
+                <td>
+                    <span ng-if="item.IdTrangThai == 1" class="badge bg-secondary">Chờ phân công</span>
+                    <span ng-if="item.IdTrangThai == 2" class="badge bg-warning">Chờ xử lý</span>
+                    <span ng-if="item.IdTrangThai == 3" class="badge bg-success">Chờ phê duyệt</span>
+                    <span ng-if="item.IdTrangThai == 4" class="badge bg-warning">Chờ trả kết quả</span>
+                    <span ng-if="item.IdTrangThai == 5" class="badge bg-success">Đã trả kết quả</span>
+                </td>
+                <td>
+                    <button class="btn btn-success btn-sm" ng-click="showXuLyModal(item)">Xử lý</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Xử lý hồ sơ -->
+    <div class="modal fade" id="xuLyModal" tabindex="-1" aria-labelledby="xuLyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="xuLyForm" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="xuLyModalLabel">Xử lý hồ sơ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <label class="form-label">Tiêu đề hồ sơ</label>
+                            <input class="form-control" type="text" ng-model="editingHoSo.TieuDe" readonly />
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label">Ghi chú xử lý</label>
+                            <textarea class="form-control" ng-model="editingHoSo.GhiChuXuLy"></textarea>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label">Đính kèm file xử lý</label>
+                            <input type="file" class="form-control" id="fileXuLy" multiple onchange="angular.element(this).scope().onFileXuLyChange(this.files)" />
+                            <div class="mt-2" ng-if="selectedFilesXuLy.length">
+                                <strong>Đã chọn: {{selectedFilesXuLy.length}} file</strong>
+                            </div>
+                            <ul class="mt-2" ng-if="selectedFilesXuLy.length">
+                                <li ng-repeat="f in selectedFilesXuLy track by $index">
+                                    <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                                    {{f.name}}
+                                    <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFileXuLy($index)">
+                                        Xóa
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" ng-click="xacNhanXuLyHoSo()">Xác nhận hoàn thành xử lý</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

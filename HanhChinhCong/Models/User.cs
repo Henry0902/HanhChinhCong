@@ -20,9 +20,16 @@ namespace HanhChinhCong.Models
     {
         public int Id { get; set; }
         public string HoTen { get; set; }
-        public string VaiTroText { get; set; }
-        public string UserName { get; set; }
+        public int VaiTro { get; set; }
+        //public string UserName { get; set; }
         // Thêm các trường khác nếu cần
+    }
+
+    public class UserInfo
+    {
+        public int Id { get; set; }
+        public string HoTen { get; set; }
+        public int VaiTro { get; set; }
     }
 
 }

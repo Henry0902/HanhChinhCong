@@ -42,6 +42,15 @@ namespace HanhChinhCong.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public JsonResult GetAllCanBoXuLy()
+        {
+            var repo = new UserRepository();
+            var userInfo = repo.GetAllCanBoXuLy(2); // 2 = Cán bộ xử lý
+            return Json(userInfo, JsonRequestBehavior.AllowGet);
+        }
+
+
         [HttpPost]
         public JsonResult AddUser(User user)
         {
@@ -63,8 +72,8 @@ namespace HanhChinhCong.Controllers
             {
                 existingUser.HoTen = user.HoTen;
                 existingUser.VaiTro = user.VaiTro;
-                existingUser.UserName = user.UserName;
-                existingUser.PassWord = user.PassWord;
+                //existingUser.UserName = user.UserName;
+                //existingUser.PassWord = user.PassWord;
                 context.SaveChanges();
                 return Json(new { success = true });
             }
@@ -72,11 +81,11 @@ namespace HanhChinhCong.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetPagedUsers(string searchName, int page = 1, int pageSize = 5)
+        public JsonResult GetPagedUsers(string searchName, int? searchVaiTro, int page = 1, int pageSize = 5)
         {
             var repo = new UserRepository();
             int totalRows;
-            var users = repo.SearchUsersWithPaging(searchName, page, pageSize, out totalRows);
+            var users = repo.SearchUsersWithPaging(searchName, searchVaiTro, page, pageSize, out totalRows);
 
             return Json(new
             {

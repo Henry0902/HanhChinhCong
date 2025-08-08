@@ -50,10 +50,15 @@ public class HoSoRepository
                         HanXuLy = reader["HanXuLy"] as DateTime?,
                         IdPhongBan = reader["IdPhongBan"] as int?,
                         TenPhongBan = reader["TenPhongBan"].ToString(),
+                        IdTrangThai = reader["IdTrangThai"] as int?,
                         IdLinhVuc = reader["IdLinhVuc"] as int?,
                         TenLinhVuc = reader["TenLinhVuc"].ToString(),
                         IdLoaiHoSo = reader["IdLoaiHoSo"] as int?,
-                        TenLoaiHoSo = reader["TenLoaiHoSo"].ToString()
+                        TenLoaiHoSo = reader["TenLoaiHoSo"].ToString(),
+                        IdCanBoTiepNhan = reader["IdCanBoTiepNhan"] as int?,
+                        TenCanBoTiepNhan = reader["TenCanBoTiepNhan"].ToString(),
+                        IdCanBoXuLy = reader["IdCanBoXuLy"] as int?,
+                        TenCanBoXuLy = reader["TenCanBoXuLy"].ToString(),
                     });
                 }
                 if (reader.NextResult() && reader.Read())
@@ -64,6 +69,8 @@ public class HoSoRepository
         }
         return list;
     }
+
+   
 
     public int AddHoSo(HoSo hoSo)
     {
@@ -121,6 +128,35 @@ public class HoSoRepository
         }
     }
 
+    public bool PhanCongHoSo(int idHoSo, int idCanBoXuLy, string ghiChu, string fileDinhKem = null)
+    {
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_PhanCongHoSo", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdHoSo", idHoSo);
+            cmd.Parameters.AddWithValue("@IdCanBoXuLy", idCanBoXuLy);
+            cmd.Parameters.AddWithValue("@GhiChu", ghiChu ?? "");
+            cmd.Parameters.AddWithValue("@FileDinhKem", fileDinhKem ?? "");
+            conn.Open();
+            return cmd.ExecuteNonQuery() > 0;
+        }
+    }
+
+    public void XacNhanXuLyHoSo(int hoSoId, string ghiChuXuLy)
+    {
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_XacNhanXuLyHoSo", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdHoSo", hoSoId);
+            cmd.Parameters.AddWithValue("@GhiChuXuLy", ghiChuXuLy ?? "");
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+
     public void DeleteHoSo(int id)
     {
         using (var conn = new SqlConnection(connectionString))
@@ -146,7 +182,7 @@ public class HoSoRepository
         }
     }
 
-    public void AddFileHoSo(int idHoSo, string tenFile, string duongDan)
+    public void AddFileHoSo(int idHoSo, string tenFile, string duongDan, string loaiFile = null)
     {
         using (var conn = new SqlConnection(connectionString))
         using (var cmd = new SqlCommand("sp_AddFileHoSo", conn))
@@ -156,10 +192,12 @@ public class HoSoRepository
             cmd.Parameters.AddWithValue("@TenFile", tenFile);
             cmd.Parameters.AddWithValue("@DuongDan", duongDan);
             cmd.Parameters.AddWithValue("@NgayUpload", DateTime.Now);
+            cmd.Parameters.AddWithValue("@LoaiFile", loaiFile ?? (object)DBNull.Value);
             conn.Open();
             cmd.ExecuteNonQuery();
         }
     }
+
 
     public List<FileHoSo> GetFilesByHoSoId(int hoSoId)
     {

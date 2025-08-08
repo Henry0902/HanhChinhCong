@@ -308,6 +308,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="ScriptController\XuLyHoSoJs.js" />
+    <Content Include="ScriptController\PhanCongJs.js" />
     <Content Include="ScriptController\LinhVucJs.js" />
     <Content Include="ScriptController\LoaiHoSoJs.js" />
     <Content Include="ScriptController\PhongBanJs.js" />
@@ -402,11 +404,15 @@
     <Content Include="Views\LoaiHoSo\Index.cshtml" />
     <Content Include="Views\PhongBan\Index.cshtml" />
     <Content Include="Views\HoSo\Index.cshtml" />
-    <Content Include="Views\HoSo\QLHoSo.cshtml" />
+    <Content Include="Views\HoSo\QuanLyHoSo.cshtml" />
+    <Content Include="Views\HoSo\PhanCong.cshtml" />
+    <Content Include="Views\HoSo\XuLy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\HoSoXuLy\" />
     <Folder Include="Uploads\HoSo\" />
+    <Folder Include="Uploads\PhanCongHoSo\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
