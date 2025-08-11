@@ -14,7 +14,7 @@ public class HoSoRepository
         connectionString = ConfigurationManager.ConnectionStrings["DbConnectContext"].ConnectionString;
     }
 
-    public List<HoSoInfo> SearchHoSoWithPaging(string searchName, string searchTenCongDan, string searchCMND_CCCD, int page, int pageSize, out int totalRows)
+    public List<HoSoInfo> SearchHoSoWithPaging(string searchName, string searchTenCongDan, string searchCMND_CCCD, int? searchIdTrangThai, int page, int pageSize, out int totalRows)
     {
         var list = new List<HoSoInfo>();
         totalRows = 0;
@@ -26,6 +26,7 @@ public class HoSoRepository
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
             cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
             cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
+            cmd.Parameters.AddWithValue("@SearchIdTrangThai", searchIdTrangThai ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@PageNumber", page);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
 
@@ -128,6 +129,24 @@ public class HoSoRepository
         }
     }
 
+    public void AddQuaTrinhXuLyHoSo(int idHoSo, string buoc, string ghiChu, string fileDinhKem, int? idNguoiThucHien)
+    {
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_AddQuaTrinhXuLyHoSo", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdHoSo", idHoSo);
+            cmd.Parameters.AddWithValue("@Buoc", buoc);
+            cmd.Parameters.AddWithValue("@GhiChu", ghiChu ?? "");
+            cmd.Parameters.AddWithValue("@FileDinhKem", fileDinhKem ?? "");
+            cmd.Parameters.AddWithValue("@NgayThucHien", DateTime.Now);
+            cmd.Parameters.AddWithValue("@IdNguoiThucHien", idNguoiThucHien ?? (object)DBNull.Value);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+
     public bool PhanCongHoSo(int idHoSo, int idCanBoXuLy, string ghiChu, string fileDinhKem = null)
     {
         using (var conn = new SqlConnection(connectionString))
@@ -155,6 +174,85 @@ public class HoSoRepository
             cmd.ExecuteNonQuery();
         }
     }
+
+    public void DuyetKetQuaHoSo(int hoSoId, string ghiChuDuyet)
+    {
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_DuyetKetQuaHoSo", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdHoSo", hoSoId);
+            cmd.Parameters.AddWithValue("@GhiChuDuyet", ghiChuDuyet ?? "");
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+
+
+    public void TraKetQuaHoSo(int hoSoId, string ghiChuTraKetQua)
+    {
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_TraKetQuaHoSo", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdHoSo", hoSoId);
+            cmd.Parameters.AddWithValue("@GhiChuTraKetQua", ghiChuTraKetQua ?? "");
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public List<QuaTrinhXuLyHoSoInfo> GetQuaTrinhXuLyByHoSoId(int hoSoId)
+    {
+        var list = new List<QuaTrinhXuLyHoSoInfo>();
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_GetQuaTrinhXuLyByHoSoId", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdHoSo", hoSoId);
+            conn.Open();
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new QuaTrinhXuLyHoSoInfo
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    IdHoSo = Convert.ToInt32(reader["IdHoSo"]),
+                    Buoc = reader["Buoc"].ToString(),
+                    GhiChu = reader["GhiChu"].ToString(),
+                    FileDinhKem = reader["FileDinhKem"].ToString(),
+                    NgayThucHien = Convert.ToDateTime(reader["NgayThucHien"]),
+                    IdNguoiThucHien = reader["IdNguoiThucHien"] as int?,
+                    TenNguoiThucHien = reader["TenNguoiThucHien"].ToString()
+                });
+            }
+        }
+        return list;
+    }
+
+    public List<TrangThaiHoSoInfo> GetTrangThaiHoSo()
+    {
+        var list = new List<TrangThaiHoSoInfo>();
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_GetTrangThaiHoSo", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            conn.Open();
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new TrangThaiHoSoInfo
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    TenTrangThai = reader["TenTrangThai"].ToString()
+                });
+            }
+        }
+        return list;
+    }
+
+
 
 
     public void DeleteHoSo(int id)

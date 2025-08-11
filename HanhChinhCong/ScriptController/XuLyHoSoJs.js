@@ -8,6 +8,12 @@
     $scope.totalRows = 0;
     $scope.totalPages = 1;
 
+    $scope.detailHoSo = {};
+    $scope.detailQuaTrinh = [];
+
+    $scope.yeuCauSuaDoiBoSungItem = null;
+    $scope.yeuCauSuaDoiBoSungGhiChu = '';
+
     // Danh sách file xử lý
     $scope.selectedFilesXuLy = [];
 
@@ -18,6 +24,33 @@
         $scope.selectedFilesXuLy = [];
         $('#xuLyModal').modal('show');
     };
+
+    // yêu cầu sửa đổi bổ sung
+    $scope.showYeuCauSuaDoiBoSungModal = function (item) {
+        $scope.yeuCauSuaDoiBoSungItem = item;
+        $scope.yeuCauSuaDoiBoSungGhiChu = '';
+        $('#xacNhanSuaDoiBoSungModal').modal('show');
+    };
+
+    $scope.xacNhanYeuCauSuaDoiBoSung = function () {
+        if (!$scope.yeuCauSuaDoiBoSungGhiChu) {
+            AlertService && AlertService.show('danger', 'Vui lòng điền ghi chú!');
+            return;
+        }
+        $http.post('/HoSo/YeuCauSuaDoiBoSung', {
+            hoSoId: $scope.yeuCauSuaDoiBoSungItem.Id,
+            ghiChu: $scope.yeuCauSuaDoiBoSungGhiChu
+        }).then(function (res) {
+            if (res.data.success) {
+                AlertService && AlertService.show('success', 'Phân công hồ sơ thành công!');
+                $('#xacNhanSuaDoiBoSungModal').modal('hide');
+                $scope.loadData();
+            } else {
+                alert('Có lỗi xảy ra: ' + res.data.message);
+            }
+        });
+    };
+
 
     // Xử lý khi chọn file
     $scope.onFileXuLyChange = function (files) {
@@ -72,6 +105,7 @@
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
+                searchIdTrangThai: 2,
                 page: $scope.page,
                 pageSize: $scope.pageSize
             }
@@ -91,6 +125,59 @@
             $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
         });
     };
+
+    $scope.showDetailModal = function (item) {
+        $scope.detailHoSo = angular.copy(item);
+        $http.get('/HoSo/GetQuaTrinhXuLyByHoSoId', { params: { hoSoId: item.Id } })
+            .then(function (res) {
+                // Chuyển đổi ngày cho từng bản ghi
+                res.data.forEach(function (qt) {
+                    if (qt.NgayThucHien) {
+                        qt.NgayThucHien = parseDotNetDate(qt.NgayThucHien);
+                    }
+                });
+                $scope.detailQuaTrinh = groupQuaTrinhXuLy(res.data);
+                $('#hoSoDetailModal').modal('show');
+            });
+    };
+
+    $scope.getFileName = function (filePath) {
+        if (!filePath) return '';
+        // Lấy phần sau cùng của đường dẫn
+        var parts = filePath.split('/');
+        return parts[parts.length - 1];
+    };
+
+    function groupQuaTrinhXuLy(list) {
+        var grouped = [];
+        list.forEach(function (item) {
+            // Tìm xem đã có dòng nào cùng bước, ghi chú, thời gian, người thực hiện chưa
+            var key = item.Buoc + '|' + item.GhiChu + '|' + item.NgayThucHien + '|' + item.IdNguoiThucHien;
+            var found = grouped.find(function (g) {
+                return g._key === key;
+            });
+            if (found) {
+                // Nếu đã có, thêm file vào mảng
+                if (item.FileDinhKem) {
+                    found.Files.push(item.FileDinhKem);
+                }
+            } else {
+                // Nếu chưa có, tạo mới
+                grouped.push({
+                    Buoc: item.Buoc,
+                    GhiChu: item.GhiChu,
+                    NgayThucHien: item.NgayThucHien,
+                    IdNguoiThucHien: item.IdNguoiThucHien,
+                    TenNguoiThucHien: item.TenNguoiThucHien,
+                    Files: item.FileDinhKem ? [item.FileDinhKem] : [],
+                    _key: key // dùng để so sánh, không hiển thị ra view
+                });
+            }
+        });
+        return grouped;
+    }
+
+
 
     $scope.search = function () {
         $scope.page = 1;

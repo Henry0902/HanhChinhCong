@@ -143,6 +143,7 @@
     <Compile Include="Models\HoSo.cs" />
     <Compile Include="Models\TrangThaiHoSo.cs" />
     <Compile Include="Models\FileHoSo.cs" />
+    <Compile Include="Models\QuaTrinhXuLyHoSo.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\LinhVucRepository.cs" />
@@ -308,6 +309,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="ScriptController\HoSoSuaDoiBoSungJs.js" />
+    <Content Include="ScriptController\QuanLyHoSoJs.js" />
+    <Content Include="ScriptController\TraKetQuaJs.js" />
+    <Content Include="ScriptController\DuyetKetQuaJs.js" />
     <Content Include="ScriptController\XuLyHoSoJs.js" />
     <Content Include="ScriptController\PhanCongJs.js" />
     <Content Include="ScriptController\LinhVucJs.js" />
@@ -407,12 +412,17 @@
     <Content Include="Views\HoSo\QuanLyHoSo.cshtml" />
     <Content Include="Views\HoSo\PhanCong.cshtml" />
     <Content Include="Views\HoSo\XuLy.cshtml" />
+    <Content Include="Views\HoSo\TraKetQua.cshtml" />
+    <Content Include="Views\HoSo\DuyetKetQua.cshtml" />
+    <Content Include="Views\HoSo\HoSoSuaDoiBoSung.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\DuyetHoSo\" />
     <Folder Include="Uploads\HoSoXuLy\" />
     <Folder Include="Uploads\HoSo\" />
     <Folder Include="Uploads\PhanCongHoSo\" />
+    <Folder Include="Uploads\TraKetQuaHoSo\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

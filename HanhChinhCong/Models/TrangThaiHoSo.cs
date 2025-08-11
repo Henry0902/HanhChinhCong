@@ -13,4 +13,10 @@ namespace HanhChinhCong.Models
         public string TenTrangThai { get; set; }
     }
 
+    public class TrangThaiHoSoInfo
+    {
+        public int Id { get; set; }
+        public string TenTrangThai { get; set; }
+    }
+
 }

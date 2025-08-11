@@ -1,0 +1,177 @@
+﻿@{
+    ViewBag.Title = "Trả kết quả hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/TraKetQuaJs.js"></script>
+
+<div class="row" ng-controller="TraKetQuaJs">
+    <h2 class="text-center">Trả kết quả hồ sơ</h2>
+    <div class="col-md-12 mb-3">
+        <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
+            <input class="form-control" type="search" placeholder="Tên công dân" ng-model="searchTenCongDan" />
+            <input class="form-control" type="search" placeholder="CMND/CCCD" ng-model="searchCMND_CCCD" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã hồ sơ</th>
+                <th>Tiêu đề</th>
+                <th>Ngày tiếp nhận</th>
+                <th>Người nộp</th>
+                <th>Số điện thoại</th>
+                <th>CMND/CCCD</th>
+                <th>Trạng thái</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.MaHoSo}}</td>
+                <td>
+                    <a href="#" ng-click="showDetailModal(item)">{{item.TieuDe}}</a>
+                </td>
+                <td>{{item.NgayTiepNhan | date:'dd/MM/yyyy'}}</td>
+                <td>{{item.TenCongDan}}</td>
+                <td>{{item.SoDienThoai}}</td>
+                <td>{{item.CMND_CCCD}}</td>
+                <td>
+                    <span ng-if="item.IdTrangThai == 4" class="badge bg-warning">Chờ trả kết quả</span>
+                    <span ng-if="item.IdTrangThai == 5" class="badge bg-success">Đã trả kết quả</span>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm" ng-if="item.IdTrangThai == 4" ng-click="showTraKetQuaModal(item)">Trả kết quả</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal trả kết quả -->
+    <div class="modal fade" id="traKetQuaModal" tabindex="-1" aria-labelledby="traKetQuaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="traKetQuaForm" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="traKetQuaModalLabel">Trả kết quả hồ sơ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <label class="form-label">Tiêu đề hồ sơ</label>
+                            <input class="form-control" type="text" ng-model="editingHoSo.TieuDe" readonly />
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label">Ghi chú trả kết quả</label>
+                            <textarea class="form-control" ng-model="editingHoSo.GhiChuTraKetQua"></textarea>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label">Đính kèm file kết quả</label>
+                            <input type="file" class="form-control" id="fileTraKetQua" multiple onchange="angular.element(this).scope().onFileTraKetQuaChange(this.files)" />
+                            <div class="mt-2" ng-if="selectedFilesTraKetQua.length">
+                                <strong>File đã chọn: {{selectedFilesTraKetQua.length}} file</strong>
+                                <ul>
+                                    <li ng-repeat="f in selectedFilesTraKetQua track by $index">
+                                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                                        {{f.name}}
+                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFileTraKetQua($index)">Xóa</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" ng-click="traKetQuaHoSo()">Xác nhận trả kết quả</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chi tiết hồ sơ -->
+    <div class="modal fade" id="hoSoDetailModal" tabindex="-1" aria-labelledby="hoSoDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="hoSoDetailModalLabel">Chi tiết hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Thông tin hồ sơ</h6>
+                    <table class="table table-bordered">
+                        <tr><th>Mã hồ sơ</th><td>{{detailHoSo.MaHoSo}}</td></tr>
+                        <tr><th>Tiêu đề</th><td>{{detailHoSo.TieuDe}}</td></tr>
+                        <tr><th>Người nộp</th><td>{{detailHoSo.TenCongDan}}</td></tr>
+                        <tr><th>Số điện thoại</th><td>{{detailHoSo.SoDienThoai}}</td></tr>
+                        <tr><th>CMND/CCCD</th><td>{{detailHoSo.CMND_CCCD}}</td></tr>
+                        <tr><th>Email</th><td>{{detailHoSo.Email}}</td></tr>
+                        <tr><th>Địa chỉ</th><td>{{detailHoSo.DiaChi}}</td></tr>
+                        <tr><th>Ngày tiếp nhận</th><td>{{detailHoSo.NgayTiepNhan | date:'dd/MM/yyyy'}}</td></tr>
+                        <tr><th>Hạn xử lý</th><td>{{detailHoSo.HanXuLy | date:'dd/MM/yyyy'}}</td></tr>
+                        <tr><th>Mô tả</th><td>{{detailHoSo.MoTa}}</td></tr>
+                        <tr><th>Ghi chú</th><td>{{detailHoSo.GhiChu}}</td></tr>
+                    </table>
+
+                    <h6 class="mt-3">Quá trình xử lý hồ sơ</h6>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Bước</th>
+                                <th>Ghi chú</th>
+                                <th>File đính kèm</th>
+                                <th>Thời gian</th>
+                                <th>Người thực hiện</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="qt in detailQuaTrinh">
+                                <td>{{$index + 1}}</td>
+                                <td>{{qt.Buoc}}</td>
+                                <td>{{qt.GhiChu}}</td>
+                                <td>
+                                    <span ng-if="qt.Files.length">
+                                        <span ng-repeat="file in qt.Files">
+                                            <a ng-href="{{file}}" target="_blank">
+                                                <i ng-class="getFileIcon(file)" class="me-2"></i>
+                                                {{getFileName(file)}}
+                                            </a>
+                                            <br ng-if="!$last" />
+                                        </span>
+                                    </span>
+                                    <span ng-if="!qt.Files.length">Không có</span>
+                                </td>
+                                <td>{{qt.NgayThucHien | date:'dd/MM/yyyy HH:mm'}}</td>
+                                <td>{{qt.TenNguoiThucHien}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+

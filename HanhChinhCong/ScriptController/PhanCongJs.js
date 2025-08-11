@@ -10,6 +10,8 @@
     $scope.listLoaiHoSo = [];
     $scope.listPhongBan = [];
     $scope.ListCanBoXuLy = [];
+    $scope.detailHoSo = {};
+    $scope.detailQuaTrinh = [];
     $scope.hoSo = {};
     $scope.hoSo.NgayTiepNhan = new Date().toISOString().slice(0, 10);
 
@@ -35,6 +37,25 @@
         $scope.selectedCanBoXuLy = null;
         $scope.GhiChu = '';
         $('#phanCongModal').modal('show');
+    };
+
+    //view hồ sơ chi tiết
+    $scope.showEditModal = function (item) {
+        $scope.editingHoSo = angular.copy(item);
+        if ($scope.editingHoSo.NgayTiepNhan) {
+            $scope.editingHoSo.NgayTiepNhan = new Date($scope.editingHoSo.NgayTiepNhan);
+        }
+        if ($scope.editingHoSo.HanXuLy) {
+            $scope.editingHoSo.HanXuLy = new Date($scope.editingHoSo.HanXuLy);
+        }
+        $scope.selectedFiles = [];
+        $scope.attachedFiles = [];
+        $scope.filesToDelete = [];
+        $http.get('/HoSo/GetFilesByHoSoId', { params: { hoSoId: item.Id } })
+            .then(function (res) {
+                $scope.attachedFiles = res.data;
+            });
+        $('#hoSoModal').modal('show');
     };
 
 
@@ -69,8 +90,6 @@
             }
         });
     };
-
-
 
     $scope.loadAllCanBoXuLy();
 
@@ -107,6 +126,13 @@
         }
     };
 
+
+    $scope.getFileName = function (filePath) {
+        if (!filePath) return '';
+        var parts = filePath.split('/');
+        return parts[parts.length - 1];
+    };
+
     // Khởi tạo
     $scope.loadPhongBan();
 
@@ -131,6 +157,7 @@
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
+                searchIdTrangThai: 1,
                 page: $scope.page,
                 pageSize: $scope.pageSize
             }

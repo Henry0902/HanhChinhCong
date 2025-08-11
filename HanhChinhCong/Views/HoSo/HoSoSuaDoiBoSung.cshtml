@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "Hồ sơ sửa đổi bổ sung";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/HoSoSuaDoiBoSungJs.js"></script>
+
+<div class="row" ng-controller="HoSoSuaDoiBoSungJs">
+    <h2 class="text-center">Quản lý hồ sơ hành chính công</h2>
+    <div class="col-md-12 mb-3">
+        <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
+            <input class="form-control" type="search" placeholder="Tên công dân" ng-model="searchTenCongDan" />
+            <input class="form-control" type="search" placeholder="CMND/CCCD" ng-model="searchCMND_CCCD" />
+
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã hồ sơ</th>
+                <th>Tiêu đề</th>
+                <th>Ngày tiếp nhận</th>
+                <th>Người nộp</th>
+                <th>Số điện thoại</th>
+                <th>CMND/CCCD</th>
+                <th>Trạng thái</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.MaHoSo}}</td>
+                <td>
+                    <a href="#" ng-click="showDetailModal(item)">{{item.TieuDe}}</a>
+                </td>
+                <td>{{item.NgayTiepNhan | date:'dd/MM/yyyy'}}</td>
+                <td>{{item.TenCongDan}}</td>
+                <td>{{item.SoDienThoai}}</td>
+                <td>{{item.CMND_CCCD}}</td>
+                <td>
+                    <span ng-if="item.IdTrangThai == 1" class="badge bg-secondary">Chờ phân công</span>
+                    <span ng-if="item.IdTrangThai == 2" class="badge bg-warning">Chờ xử lý</span>
+                    <span ng-if="item.IdTrangThai == 3" class="badge bg-success">Chờ phê duyệt</span>
+                    <span ng-if="item.IdTrangThai == 4" class="badge bg-warning">Chờ trả kết quả</span>
+                    <span ng-if="item.IdTrangThai == 5" class="badge bg-success">Đã trả kết quả</span>
+                </td>
+                <td>
+                    <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)">Sửa đổi, bổ sung</button>
+
+                    <button class="btn btn-danger btn-sm" ng-click="deleteHoSo(item.Id)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Thêm/Sửa hồ sơ -->
+    <div class="modal fade " id="hoSoModal" tabindex="-1" aria-labelledby="hoSoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form name="hoSoForm" class="needs-validation" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hoSoModalLabel">Thêm/Sửa hồ sơ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Phòng ban</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.TenPhongBan" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Lĩnh vực</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.TenLinhVuc" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Loại hồ sơ</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.TenLoaiHoSo" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Mã hồ sơ</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.MaHoSo" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tiêu đề</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.TieuDe" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Tên người nộp</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.TenCongDan" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.SoDienThoai">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">CMND/CCCD</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.CMND_CCCD" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.Email" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" ng-model="editingHoSo.DiaChi" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Ngày tiếp nhận</label>
+                                <input type="date" class="form-control" ng-model="editingHoSo.NgayTiepNhan" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Hạn xử lý</label>
+                                <input type="date" class="form-control" ng-model="editingHoSo.HanXuLy" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Mô tả</label>
+                                <textarea class="form-control" ng-model="editingHoSo.MoTa"></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Ghi chú</label>
+                                <textarea class="form-control" ng-model="editingHoSo.GhiChu"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label class="form-label">Đính kèm file</label>
+                            <input type="file" class="form-control" id="fileDinhKem" multiple onchange="angular.element(this).scope().onFileChange(this.files)" />
+                            <div class="invalid-feedback">Vui lòng chọn file đính kèm.</div>
+
+                            <!-- File đã đính kèm -->
+                            <div class="mt-2" ng-if="attachedFiles.length">
+                                <strong>File đã đính kèm:</strong>
+                                <ul>
+                                    <li ng-repeat="file in attachedFiles track by $index">
+                                        <a ng-href="{{file.DuongDan}}" target="_blank">
+                                            <i ng-class="getFileIcon(file.TenFile)" class="me-2"></i>
+                                            {{file.TenFile}}
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeAttachedFile(file, $index)">
+                                            Xóa
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- File mới chọn -->
+                            <div class="mt-2" ng-if="selectedFiles.length">
+                                <strong>File mới chọn: {{selectedFiles.length}} file</strong>
+                                <ul>
+                                    <li ng-repeat="f in selectedFiles track by $index">
+                                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                                        {{f.name}}
+                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFile($index)">
+                                            Xóa
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+
+                        <!-- Thêm các trường khác nếu cần -->
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button"
+                                ng-click="editingHoSo.Id ? editHoSo(editingHoSo) : addHoSo(editingHoSo)">
+                            Lưu
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chi tiết hồ sơ -->
+    <div class="modal fade" id="hoSoDetailModal" tabindex="-1" aria-labelledby="hoSoDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="hoSoDetailModalLabel">Chi tiết hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Thông tin hồ sơ</h6>
+                    <table class="table table-bordered">
+                        <tr><th>Mã hồ sơ</th><td>{{detailHoSo.MaHoSo}}</td></tr>
+                        <tr><th>Tiêu đề</th><td>{{detailHoSo.TieuDe}}</td></tr>
+                        <tr><th>Người nộp</th><td>{{detailHoSo.TenCongDan}}</td></tr>
+                        <tr><th>Số điện thoại</th><td>{{detailHoSo.SoDienThoai}}</td></tr>
+                        <tr><th>CMND/CCCD</th><td>{{detailHoSo.CMND_CCCD}}</td></tr>
+                        <tr><th>Email</th><td>{{detailHoSo.Email}}</td></tr>
+                        <tr><th>Địa chỉ</th><td>{{detailHoSo.DiaChi}}</td></tr>
+                        <tr><th>Ngày tiếp nhận</th><td>{{detailHoSo.NgayTiepNhan | date:'dd/MM/yyyy'}}</td></tr>
+                        <tr><th>Hạn xử lý</th><td>{{detailHoSo.HanXuLy | date:'dd/MM/yyyy'}}</td></tr>
+                        <tr><th>Mô tả</th><td>{{detailHoSo.MoTa}}</td></tr>
+                        <tr><th>Ghi chú</th><td>{{detailHoSo.GhiChu}}</td></tr>
+                    </table>
+
+                    <h6 class="mt-3">Quá trình xử lý hồ sơ</h6>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Bước</th>
+                                <th>Ghi chú</th>
+                                <th>File đính kèm</th>
+                                <th>Thời gian</th>
+                                <th>Người thực hiện</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="qt in detailQuaTrinh">
+                                <td>{{$index + 1}}</td>
+                                <td>{{qt.Buoc}}</td>
+                                <td>{{qt.GhiChu}}</td>
+                                <td>
+                                    <span ng-if="qt.Files.length">
+                                        <span ng-repeat="file in qt.Files">
+                                            <a ng-href="{{file}}" target="_blank">
+                                                <i ng-class="getFileIcon(file)" class="me-2"></i>
+                                                {{getFileName(file)}}
+                                            </a>
+                                            <br ng-if="!$last" />
+                                        </span>
+                                    </span>
+                                    <span ng-if="!qt.Files.length">Không có</span>
+                                </td>
+                                <td>{{qt.NgayThucHien | date:'dd/MM/yyyy HH:mm'}}</td>
+                                <td>{{qt.TenNguoiThucHien}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
