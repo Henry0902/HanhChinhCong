@@ -1,0 +1,70 @@
+﻿@model IEnumerable<HanhChinhCong.Models.Role>
+
+@{
+    ViewBag.Title = "Phân quyền truy cập trang cho vai trò";
+    var allPages = new List<dynamic> {
+        new { Key = "HoSo_Index", Name = "Nộp hồ sơ" },
+        new { Key = "HoSo_HoSoSuaDoiBoSung", Name = "Hồ sơ sửa đổi bổ sung" },
+        new { Key = "HoSo_PhanCong", Name = "Phân công hồ sơ" },
+        new { Key = "HoSo_XuLy", Name = "Xử lý hồ sơ" },
+        new { Key = "HoSo_DuyetKetQua", Name = "Duyệt kết quả xử lý hồ sơ" },
+        new { Key = "HoSo_TraKetQua", Name = "Trả kết quả hồ sơ" },
+        new { Key = "HoSo_QuanLyHoSo", Name = "Quản lý hồ sơ" }
+        // Thêm các trang khác nếu cần
+    };
+}
+
+<h2>@ViewBag.Title</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Vai trò</th>
+            @foreach (var page in allPages)
+            {
+                <th>@page.Name</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.Name</td>
+                @foreach (var page in allPages)
+                {
+                    <td>
+                        <input type="checkbox"
+                               name="rolePage_@role.Id_@page.Key"
+                               @(ViewBag.RolePageMap != null && ViewBag.RolePageMap.ContainsKey(role.Id) && ViewBag.RolePageMap[role.Id].Contains(page.Key) ? "checked" : "")
+                               data-roleid="@role.Id"
+                               data-pagekey="@page.Key" />
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-primary" id="btnSaveRolePage">Lưu phân quyền</button>
+
+<script>
+    $('#btnSaveRolePage').click(function () {
+        var data = [];
+        $('input[type=checkbox][data-roleid]').each(function () {
+            if ($(this).is(':checked')) {
+                data.push({
+                    roleId: $(this).data('roleid'),
+                    pageKey: $(this).data('pagekey')
+                });
+            }
+        });
+        $.ajax({
+            url: '/Role/SaveRolePagePermission',
+            type: 'POST',
+            data: JSON.stringify({ items: data }),
+            contentType: 'application/json',
+            success: function (res) {
+                alert(res.success ? 'Lưu thành công!' : 'Lưu thất bại!');
+            }
+        });
+    });
+</script>

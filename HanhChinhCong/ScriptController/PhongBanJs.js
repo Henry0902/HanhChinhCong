@@ -60,15 +60,23 @@
         }
     };
 
-    $scope.deletePhongBan = function (id) {
-        $http.post('/PhongBan/DeletePhongBan', { id: id })
-            .then(function (res) {
-                if (res.data.success) {
-                    $scope.loadPhongBan();
-                    AlertService && AlertService.show('success', 'Xóa thành công!');
+    $scope.deleteItem = function (id) {
+        $scope.deleteItemId = id;
+        $('#confirmDeleteModal').modal('show');
+    };
+
+    $scope.confirmDelete = function () {
+        $('#confirmDeleteModal').modal('hide');
+        $http.post('/PhongBan/DeletePhongBan', { id: $scope.deleteItemId })
+            .then(function (response) {
+                if (response.data.success) {
+                    $scope.loadPhongBan(); // hoặc $scope.search() nếu có
+                    AlertService.show('success', 'Xóa thành công!');
                 } else {
-                    AlertService && AlertService.show('danger', 'Xóa thất bại!');
+                    AlertService.show('danger', response.data.message || 'Xóa thất bại!');
                 }
+            }, function () {
+                AlertService.show('danger', 'Đã có lỗi xảy ra!');
             });
     };
 

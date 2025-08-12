@@ -47,6 +47,13 @@ namespace HanhChinhCong.Controllers
         [HttpPost]
         public JsonResult DeletePhongBan(int id)
         {
+            // Kiểm tra có LinhVuc nào tham chiếu không
+            var hasLinhVuc = context.LinhVuc.Any(lv => lv.IdPhongBan == id);
+            if (hasLinhVuc)
+            {
+                return Json(new { success = false, message = "Không thể xóa! Phòng ban này đang được sử dụng trong lĩnh vực." });
+            }
+
             var phongBan = context.PhongBan.FirstOrDefault(x => x.Id == id);
             if (phongBan != null)
             {

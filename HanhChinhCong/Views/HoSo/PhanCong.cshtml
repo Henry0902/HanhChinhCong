@@ -118,13 +118,13 @@
     </div>
 
 
-    <!-- Modal Thêm/Sửa hồ sơ -->
+    <!-- Modal chi tiết hồ sơ -->
     <div class="modal fade " id="hoSoModal" tabindex="-1" aria-labelledby="hoSoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form name="hoSoForm" class="needs-validation" novalidate>
                     <div class="modal-header">
-                        <h5 class="modal-title" id="hoSoModalLabel">Thêm/Sửa hồ sơ</h5>
+                        <h5 class="modal-title" id="hoSoModalLabel">Chi tiết hồ sơ</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -189,12 +189,12 @@
                         <div class="row mb-2">
                             <div class="col-md-6">
                                 <label class="form-label">Mô tả</label>
-                                <textarea class="form-control" ng-model="editingHoSo.MoTa"></textarea>
+                                <textarea class="form-control" ng-model="editingHoSo.MoTa" rows="6"></textarea>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Ghi chú</label>
-                                <textarea class="form-control" ng-model="editingHoSo.GhiChu"></textarea>
+                                <textarea class="form-control" ng-model="editingHoSo.GhiChu" rows="6"></textarea>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -206,14 +206,14 @@
                             <div class="mt-2" ng-if="attachedFiles.length">
                                 <strong>File đã đính kèm:</strong>
                                 <ul>
-                                    <li ng-repeat="file in attachedFiles track by $index">
+                                    <li ng-repeat="file in attachedFiles track by $index" class="d-flex align-items-center gap-2 mb-2">
+                                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeAttachedFile(file, $index)">
+                                            Xóa
+                                        </button>
                                         <a ng-href="{{file.DuongDan}}" target="_blank">
                                             <i ng-class="getFileIcon(file.TenFile)" class="me-2"></i>
                                             {{file.TenFile}}
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeAttachedFile(file, $index)">
-                                            Xóa
-                                        </button>
                                     </li>
                                 </ul>
                             </div>
@@ -222,12 +222,12 @@
                             <div class="mt-2" ng-if="selectedFiles.length">
                                 <strong>File mới chọn: {{selectedFiles.length}} file</strong>
                                 <ul>
-                                    <li ng-repeat="f in selectedFiles track by $index">
-                                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
-                                        {{f.name}}
-                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFile($index)">
+                                    <li ng-repeat="f in selectedFiles track by $index" class="d-flex align-items-center gap-2 mb-2">
+                                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeFile($index)">
                                             Xóa
                                         </button>
+                                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                                        {{f.name}}
                                     </li>
                                 </ul>
                             </div>

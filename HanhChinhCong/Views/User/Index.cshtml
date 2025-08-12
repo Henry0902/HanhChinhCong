@@ -11,10 +11,11 @@
     <div class="col-md-6">
         <form method="get" action="@Url.Action("Index", "User")" class="d-flex justify-content-end gap-2">
             <input class="form-control" type="search" placeholder="Nhập tên cán bộ" ng-model="searchName" />
-            <select class="form-control" ng-model="searchVaiTro"
-                    ng-options="option.value as option.label for option in listRoles">
+            <select class="form-control" ng-model="searchRole"
+                    ng-options="role.Id as role.Name for role in listRoles">
                 <option value="">-- Chọn vai trò --</option>
             </select>
+
             <button class="btn btn-outline-success" type="button" ng-click="search()">Search</button>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">Thêm</button>
         </form>
@@ -33,7 +34,7 @@
             <tr ng-repeat="item in listData">
                 <th>{{$index + 1 + (page - 1) * pageSize}}</th>
                 <td>{{item.HoTen}}</td>
-                <td>{{item.VaiTroText}}</td>
+                <td>{{item.RoleText}}</td>
                 <td>
                     <button type="button" class="btn btn-warning" ng-click="openEditUserModal(item, $index)" data-bs-toggle="modal" data-bs-target="#editUserModal">Sửa</button>
                     <button type="button" class="btn btn-danger" ng-click="deleteUser(item.Id)">Xóa</button>
@@ -57,6 +58,26 @@
         </ul>
     </nav>
 
+    <!-- Modal xác nhận xóa -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa người dùng này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" ng-click="confirmDelete()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Modal Thêm mới cán bộ -->
     <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -74,10 +95,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Vai trò</label>
-                            <select class="form-control" ng-model="newUser.VaiTro"
-                                    ng-options="option.value as option.label for option in listRoles">
-                                <option value="" selected>-- Chọn vai trò --</option>
+                            <select class="form-control" ng-model="newUser.Role"
+                                    ng-options="role.Id as role.Name for role in listRoles">
+                                <option value="">-- Chọn vai trò --</option>
                             </select>
+
                             <div class="invalid-feedback">Vui lòng chọn vai trò.</div>
                         </div>
                         <div class="col-md-6">
@@ -117,9 +139,9 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Vai trò</label>
-                            <select class="form-control" ng-model="editingUser.VaiTro"
-                                    ng-options="option.value as option.label for option in listRoles">
-                                <option value="" selected>-- Chọn vai trò --</option>
+                            <select class="form-control" ng-model="editingUser.Role"
+                                    ng-options="role.Id as role.Name for role in listRoles">
+                                <option value="">-- Chọn vai trò --</option>
                             </select>
                             <div class="invalid-feedback">Vui lòng chọn vai trò.</div>
                         </div>

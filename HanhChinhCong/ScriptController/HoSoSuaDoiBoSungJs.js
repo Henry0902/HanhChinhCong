@@ -127,17 +127,26 @@
         });
     };
 
-    $scope.deleteHoSo = function (id) {
-        $http.post('/HoSo/DeleteHoSo', { id: id })
-            .then(function (res) {
-                if (res.data.success) {
-                    $scope.loadHoSo();
-                    AlertService && AlertService.show('success', 'Xóa thành công!');
+    $scope.deleteItem = function (id) {
+        $scope.deleteItemId = id;
+        $('#confirmDeleteModal').modal('show');
+    };
+
+    $scope.confirmDelete = function () {
+        $('#confirmDeleteModal').modal('hide');
+        $http.post('/HoSo/DeleteHoSo', { id: $scope.deleteItemId })
+            .then(function (response) {
+                if (response.data.success) {
+                    $scope.loadHoSo(); // hoặc $scope.search() nếu có
+                    AlertService.show('success', 'Xóa thành công!');
                 } else {
-                    AlertService && AlertService.show('danger', 'Xóa thất bại!');
+                    AlertService.show('danger', response.data.message || 'Xóa thất bại!');
                 }
+            }, function () {
+                AlertService.show('danger', 'Đã có lỗi xảy ra!');
             });
     };
+
 
     $scope.showDetailModal = function (item) {
         $scope.detailHoSo = angular.copy(item);

@@ -63,6 +63,13 @@ namespace HanhChinhCong.Controllers
         [HttpPost]
         public JsonResult DeleteLoaiHoSo(int id)
         {
+            // Kiểm tra có hồ sơ nào tham chiếu đến loại hồ sơ này không
+            var hasHoSo = context.HoSo.Any(hs => hs.IdLoaiHoSo == id);
+            if (hasHoSo)
+            {
+                return Json(new { success = false, message = "Không thể xóa! Loại hồ sơ này đang được sử dụng trong Hồ sơ." });
+            }
+
             var loaiHoSo = context.LoaiHoSo.FirstOrDefault(x => x.Id == id);
             if (loaiHoSo != null)
             {

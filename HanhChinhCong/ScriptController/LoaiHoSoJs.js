@@ -81,15 +81,23 @@
         }
     };
 
-    $scope.deleteLoaiHoSo = function (id) {
-        $http.post('/LoaiHoSo/DeleteLoaiHoSo', { id: id })
-            .then(function (res) {
-                if (res.data.success) {
-                    $scope.loadLoaiHoSo();
-                    AlertService && AlertService.show('success', 'Xóa thành công!');
+    $scope.deleteItem = function (id) {
+        $scope.deleteItemId = id;
+        $('#confirmDeleteModal').modal('show');
+    };
+
+    $scope.confirmDelete = function () {
+        $('#confirmDeleteModal').modal('hide');
+        $http.post('/LoaiHoSo/DeleteLoaiHoSo', { id: $scope.deleteItemId })
+            .then(function (response) {
+                if (response.data.success) {
+                    $scope.loadLoaiHoSo(); // hoặc $scope.search() nếu có
+                    AlertService.show('success', 'Xóa thành công!');
                 } else {
-                    AlertService && AlertService.show('danger', 'Xóa thất bại!');
+                    AlertService.show('danger', response.data.message || 'Xóa thất bại!');
                 }
+            }, function () {
+                AlertService.show('danger', 'Đã có lỗi xảy ra!');
             });
     };
 

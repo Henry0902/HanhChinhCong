@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Phân quyền người dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/PhanQuyenJs.js"></script>
+
+<div class="row" ng-controller="PhanQuyenJs">
+    <h2 class="text-center">Phân quyền người dùng</h2>
+    <div class="col-md-6">
+        <label class="form-label">Chọn người dùng</label>
+        <select class="form-control" ng-model="selectedUserId" ng-options="u.Id as u.HoTen + ' (' + u.UserName + ')' for u in users" ng-change="loadUserRoles()">
+            <option value="">-- Chọn người dùng --</option>
+        </select>
+    </div>
+    <div class="col-md-6 mt-3" ng-if="selectedUserId">
+        <label class="form-label">Chọn vai trò</label>
+        <div class="form-check" ng-repeat="role in roles">
+            <input class="form-check-input" type="checkbox" ng-model="role.selected" ng-change="clearMessages()" id="role_{{role.Id}}">
+
+            <label class="form-check-label" for="role_{{role.Id}}">{{role.Name}}</label>
+        </div>
+        <button class="btn btn-primary mt-3" ng-click="updateUserRoles()">Cập nhật phân quyền</button>
+        <div class="alert alert-success mt-2" ng-if="successMessage">{{successMessage}}</div>
+        <div class="alert alert-danger mt-2" ng-if="errorMessage">{{errorMessage}}</div>
+    </div>
+</div>

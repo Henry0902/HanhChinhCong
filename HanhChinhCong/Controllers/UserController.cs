@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using HanhChinhCong.Models;
 using System.Configuration;
 using System.Data;
+using System.Data.Entity;
 
 namespace HanhChinhCong.Controllers
 {
@@ -20,19 +21,12 @@ namespace HanhChinhCong.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult PhanQuyen()
         {
-            ViewBag.Message = "Your application description page.";
-
+         
             return View();
         }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
 
         [HttpGet]
         public ActionResult GetList()
@@ -46,7 +40,7 @@ namespace HanhChinhCong.Controllers
         public JsonResult GetAllCanBoXuLy()
         {
             var repo = new UserRepository();
-            var userInfo = repo.GetAllCanBoXuLy(2); // 2 = Cán bộ xử lý
+            var userInfo = repo.GetAllCanBoXuLy(3); // 3 = Cán bộ xử lý
             return Json(userInfo, JsonRequestBehavior.AllowGet);
         }
 
@@ -57,6 +51,7 @@ namespace HanhChinhCong.Controllers
             // Lưu user vào database (Entity Framework hoặc ADO.NET)
             // Ví dụ:
             context = new DbConnectContext();
+            user.PassWord = BCrypt.Net.BCrypt.HashPassword(user.PassWord);
             context.User.Add(user);
             context.SaveChanges();
 
@@ -71,7 +66,7 @@ namespace HanhChinhCong.Controllers
             if (existingUser != null)
             {
                 existingUser.HoTen = user.HoTen;
-                existingUser.VaiTro = user.VaiTro;
+                existingUser.Role = user.Role;
                 //existingUser.UserName = user.UserName;
                 //existingUser.PassWord = user.PassWord;
                 context.SaveChanges();
@@ -80,12 +75,29 @@ namespace HanhChinhCong.Controllers
             return Json(new { success = false });
         }
 
+        [HttpPost]
+        public JsonResult Delete(int id)
+        {
+            using (var db = new DbConnectContext())
+            {
+                var user = db.User.FirstOrDefault(u => u.Id == id);
+                if (user != null)
+                {
+                    db.User.Remove(user);
+                    db.SaveChanges();
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false, message = "Không tìm thấy người dùng!" });
+            }
+        }
+
+
         [HttpGet]
-        public JsonResult GetPagedUsers(string searchName, int? searchVaiTro, int page = 1, int pageSize = 5)
+        public JsonResult GetPagedUsers(string searchName, int? searchRole, int page = 1, int pageSize = 5)
         {
             var repo = new UserRepository();
             int totalRows;
-            var users = repo.SearchUsersWithPaging(searchName, searchVaiTro, page, pageSize, out totalRows);
+            var users = repo.SearchUsersWithPaging(searchName, searchRole, page, pageSize, out totalRows);
 
             return Json(new
             {
@@ -97,6 +109,83 @@ namespace HanhChinhCong.Controllers
         }
 
 
+        [HttpGet]
+        public JsonResult GetAllUsers()
+        {
+         
+            using (var db = new DbConnectContext())
+            {
+                var users = db.User.Select(u => new { u.Id, u.HoTen, u.UserName }).ToList();
+                return Json(users, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetAllRoles()
+        {
+         
+            using (var db = new DbConnectContext())
+            {
+                var roles = db.Role.Select(r => new { r.Id, r.Name }).ToList();
+                return Json(roles, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetUserRoles(int userId)
+        {
+           
+            using (var db = new DbConnectContext())
+            {
+                var roleIds = db.UserRole.Where(ur => ur.UserId == userId).Select(ur => ur.RoleId).ToList();
+                return Json(roleIds, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult UpdateUserRoles(int userId, List<int> roleIds)
+        {
+          
+            using (var db = new DbConnectContext())
+            {
+                var existing = db.UserRole.Where(ur => ur.UserId == userId).ToList();
+                db.UserRole.RemoveRange(existing);
+                foreach (var roleId in roleIds)
+                {
+                    db.UserRole.Add(new UserRole { UserId = userId, RoleId = roleId });
+                }
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+        }
+
+        //đăng ký người dùng mới là công dân
+        [HttpPost]
+        public JsonResult Register(User user)
+        {
+            using (var db = new DbConnectContext())
+            {
+                // Kiểm tra trùng username
+                if (db.User.Any(u => u.UserName == user.UserName))
+                {
+                    return Json(new { success = false, message = "Tên đăng nhập đã tồn tại!" });
+                }
+
+                // Mã hóa mật khẩu bằng BCrypt
+                user.PassWord = BCrypt.Net.BCrypt.HashPassword(user.PassWord);
+
+                // Gán role mặc định ( 6 : công dân)
+                user.Role = 6;
+
+                db.User.Add(user);
+                db.SaveChanges();
+                // Thêm vào bảng UserRole nếu dùng phân quyền động
+                db.UserRole.Add(new UserRole { UserId = user.Id, RoleId = 6 });
+                db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+        }
 
 
 

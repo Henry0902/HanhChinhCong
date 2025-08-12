@@ -30,8 +30,6 @@ namespace HanhChinhCong.Controllers
         }
 
 
-
-
         [HttpGet]
         public JsonResult GetPagedLinhVuc(string searchName, int page = 1, int pageSize = 5)
         {
@@ -91,6 +89,13 @@ namespace HanhChinhCong.Controllers
         {
             using (var context = new DbConnectContext())
             {
+                // Kiểm tra có LinhVuc nào tham chiếu không
+                var hasLoaiHoSo = context.LoaiHoSo.Any(lv => lv.IdLinhVuc == id);
+                if (hasLoaiHoSo)
+                {
+                    return Json(new { success = false, message = "Không thể xóa! Lĩnh vực này đang được sử dụng trong Loại Hồ sơ." });
+                }
+
                 var linhVuc = context.LinhVuc.Find(id);
                 if (linhVuc != null)
                 {

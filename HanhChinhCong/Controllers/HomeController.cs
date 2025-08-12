@@ -14,6 +14,10 @@ namespace HanhChinhCong.Controllers
         private DbConnectContext context = null;
         public ActionResult Index()
         {
+            using (var db = new DbConnectContext())
+            {
+                ViewBag.AllRoles = db.Role.Select(r => new { r.Id, r.Name }).ToList();
+            }
 
             return View();
         }

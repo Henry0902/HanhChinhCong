@@ -15,8 +15,11 @@ namespace HanhChinhCong.Models
         public virtual DbSet<LoaiHoSo> LoaiHoSo { get; set; }
 
         public virtual DbSet<PhongBan> PhongBan { get; set; }
-
         public virtual DbSet<HoSo> HoSo { get; set; }
+        public virtual DbSet<Role> Role { get; set; }
+        public virtual DbSet<UserRole> UserRole { get; set; }
+
+        public virtual DbSet<RolePagePermission> RolePagePermission { get; set; }
 
     }
 }

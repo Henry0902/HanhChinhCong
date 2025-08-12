@@ -43,14 +43,15 @@
                 <td>
                     <span ng-if="item.IdTrangThai == 1" class="badge bg-secondary">Chờ phân công</span>
                     <span ng-if="item.IdTrangThai == 2" class="badge bg-warning">Chờ xử lý</span>
-                    <span ng-if="item.IdTrangThai == 3" class="badge bg-success">Chờ phê duyệt</span>
-                    <span ng-if="item.IdTrangThai == 4" class="badge bg-warning">Chờ trả kết quả</span>
+                    <span ng-if="item.IdTrangThai == 3" class="badge bg-primary">Chờ phê duyệt</span>
+                    <span ng-if="item.IdTrangThai == 4" class="badge bg-info">Chờ trả kết quả</span>
                     <span ng-if="item.IdTrangThai == 5" class="badge bg-success">Đã trả kết quả</span>
+                    <span ng-if="item.IdTrangThai == 6" class="badge bg-danger">Sửa đổi bổ sung</span>
                 </td>
                 <td>
                     <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)">Sửa đổi, bổ sung</button>
 
-                    <button class="btn btn-danger btn-sm" ng-click="deleteHoSo(item.Id)">Xóa</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)">Xóa</button>
                 </td>
             </tr>
         </tbody>
@@ -68,6 +69,25 @@
             </li>
         </ul>
     </nav>
+
+    <!-- Modal xác nhận xóa -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa mục này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" ng-click="confirmDelete()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Thêm/Sửa hồ sơ -->
     <div class="modal fade " id="hoSoModal" tabindex="-1" aria-labelledby="hoSoModalLabel" aria-hidden="true">
@@ -140,12 +160,12 @@
                         <div class="row mb-2">
                             <div class="col-md-6">
                                 <label class="form-label">Mô tả</label>
-                                <textarea class="form-control" ng-model="editingHoSo.MoTa"></textarea>
+                                <textarea class="form-control" ng-model="editingHoSo.MoTa" rows="6"></textarea>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Ghi chú</label>
-                                <textarea class="form-control" ng-model="editingHoSo.GhiChu"></textarea>
+                                <textarea class="form-control" ng-model="editingHoSo.GhiChu" rows="6"></textarea>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -157,14 +177,14 @@
                             <div class="mt-2" ng-if="attachedFiles.length">
                                 <strong>File đã đính kèm:</strong>
                                 <ul>
-                                    <li ng-repeat="file in attachedFiles track by $index">
+                                    <li ng-repeat="file in attachedFiles track by $index" class="d-flex align-items-center gap-2 mb-2">
+                                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeAttachedFile(file, $index)">
+                                            Xóa
+                                        </button>
                                         <a ng-href="{{file.DuongDan}}" target="_blank">
                                             <i ng-class="getFileIcon(file.TenFile)" class="me-2"></i>
                                             {{file.TenFile}}
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeAttachedFile(file, $index)">
-                                            Xóa
-                                        </button>
                                     </li>
                                 </ul>
                             </div>
@@ -173,17 +193,17 @@
                             <div class="mt-2" ng-if="selectedFiles.length">
                                 <strong>File mới chọn: {{selectedFiles.length}} file</strong>
                                 <ul>
-                                    <li ng-repeat="f in selectedFiles track by $index">
-                                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
-                                        {{f.name}}
-                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFile($index)">
+                                    <li ng-repeat="f in selectedFiles track by $index" class="d-flex align-items-center gap-2 mb-2">
+                                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeFile($index)">
                                             Xóa
                                         </button>
+                                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                                        {{f.name}}
                                     </li>
                                 </ul>
                             </div>
-                        </div>
 
+                        </div>
 
                         <!-- Thêm các trường khác nếu cần -->
                     </div>
@@ -211,6 +231,8 @@
                 <div class="modal-body">
                     <h6>Thông tin hồ sơ</h6>
                     <table class="table table-bordered">
+                        <tr><th>Lĩnh vực</th><td>{{detailHoSo.TenLinhVuc}}</td></tr>
+                        <tr><th>Loại hồ sơ</th><td>{{detailHoSo.TenLoaiHoSo}}</td></tr>
                         <tr><th>Mã hồ sơ</th><td>{{detailHoSo.MaHoSo}}</td></tr>
                         <tr><th>Tiêu đề</th><td>{{detailHoSo.TieuDe}}</td></tr>
                         <tr><th>Người nộp</th><td>{{detailHoSo.TenCongDan}}</td></tr>

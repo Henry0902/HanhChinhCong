@@ -1,0 +1,187 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from mannatthemes.com/dastone/default/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Aug 2021 07:06:04 GMT -->
+<head>
+    <meta charset="utf-8" />
+    <title>Dastone - Admin & Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    <!-- App css -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/metisMenu.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    @*<link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />*@
+    <link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        var app = angular.module('myApp', []);
+    </script>
+    <script src="~/ScriptController/AccountJs.js"></script>
+
+</head>
+
+<body class="account-body accountbg" ng-app="myApp">
+
+    <!-- Log In page -->
+    <div class="container">
+        <div class="row vh-100 d-flex justify-content-center">
+            <div class="col-12 align-self-center">
+                <div class="row">
+                    <div class="col-lg-5 mx-auto">
+                        <div class="card" ng-controller="AccountJs">
+                            <div class="card-body p-0 auth-header-box">
+                                <div class="text-center p-3">
+                                    <a href="index.html" class="logo logo-admin">
+                                        <img src="~/assets/images/logo-dvc.png" height="50" alt="logo" class="auth-logo">
+                                    </a>
+                                    <h4 class="mt-3 mb-1 fw-semibold text-white font-18">
+                                        HỆ THỐNG THÔNG TIN GIẢI QUYẾT THỦ TỤC HÀNH CHÍNH
+                                        TỈNH BẮC NINH
+                                    </h4>
+                                    <p class="text-muted  mb-0">Đăng nhập để tiếp tục dùng hệ thống</p>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="nav-border nav nav-pills" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#LogIn_Tab" role="tab">Đăng nhập</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#Register_Tab" role="tab">Đăng ký</a>
+                                    </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane active p-3" id="LogIn_Tab" role="tabpanel">
+                                        <div>
+                                            <form ng-submit="login()" class="form-horizontal auth-form" autocomplete="off">
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label" for="username">Tên đăng nhập</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" ng-model="username" id="username" placeholder="Nhập tên đăng nhập" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label" for="userpassword">Mật khẩu</label>
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" ng-model="password" id="userpassword" placeholder="Nhập mật khẩu" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-0 row">
+                                                    <div class="col-12">
+                                                        <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Đăng nhập <i class="fas fa-sign-in-alt ms-1"></i></button>
+                                                    </div>
+                                                </div>
+                                                <div class="alert alert-danger mt-2" ng-if="errorMessage">{{errorMessage}}</div>
+                                            </form>
+                                        </div>
+
+
+                                        @*<div class="m-3 text-center text-muted">
+                                            <p class="mb-0">Bạn không có tài khoản ?  <a href="#Register_Tab" class="text-primary ms-2">Đăng ký miễn phí</a></p>
+                                        </div>*@
+                                        <div class="account-social">
+                                            <h6 class="mb-3">Hoặc đăng nhập với</h6>
+                                        </div>
+                                        <div class="btn-group w-100">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary">Facebook</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary">Twitter</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary">Google</button>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane px-3 pt-3" id="Register_Tab" role="tabpanel">
+                                        <form class="form-horizontal auth-form" name="registerForm" ng-submit="register($event)" autocomplete="off">
+                                            <div class="form-group mb-2">
+                                                <label class="form-label" for="reg_hoten">Họ Tên</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" ng-model="reg_hoten" id="reg_hoten" placeholder="Nhập họ tên" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label class="form-label" for="reg_username">Tên đăng nhập</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" ng-model="reg_username" id="reg_username" placeholder="Nhập tên đăng nhập" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label class="form-label" for="reg_password">Mật khẩu</label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" ng-model="reg_password" id="reg_password" placeholder="Nhập mật khẩu" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label class="form-label" for="reg_conf_password">Nhập lại mật khẩu</label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" ng-model="reg_conf_password" id="reg_conf_password" placeholder="Nhập lại mật khẩu" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-0 row">
+                                                <div class="col-12">
+                                                    <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Đăng ký <i class="fas fa-sign-in-alt ms-1"></i></button>
+                                                </div>
+                                            </div>
+                                            <div class="alert alert-danger mt-2" ng-if="registerError">{{registerError}}</div>
+                                            <div class="alert alert-success mt-2" ng-if="registerSuccess">{{registerSuccess}}</div>
+                                        </form>
+
+                                        @*<p class="my-3 text-muted">Bạn đã có tài khoản ?<a href="index" class="text-primary ms-2">Đăng nhâp</a></p>*@
+                                    </div>
+                                </div>
+                            </div><!--end card-body-->
+                            <div class="card-body bg-light-alt text-center">
+                                <span class="text-muted d-none d-sm-inline-block">
+                                    Mannatthemes ©
+                                    <script>
+                                        document.write(new Date().getFullYear())
+                                    </script>
+                                </span>
+                            </div>
+                        </div><!--end card-->
+                    </div><!--end col-->
+                </div><!--end row-->
+            </div><!--end col-->
+        </div><!--end row-->
+    </div><!--end container-->
+    <!-- End Log In page -->
+    <!-- jQuery  -->
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/js/metismenu.min.js"></script>
+    <script src="~/assets/js/waves.js"></script>
+    <script src="~/assets/js/feather.min.js"></script>
+    <script src="~/assets/js/simplebar.min.js"></script>
+    <script src="~/assets/js/moment.js"></script>
+    @*<script src="../plugins/daterangepicker/daterangepicker.js"></script>*@
+
+    @*<script src="../plugins/apex-charts/apexcharts.min.js"></script>
+        <script src="../plugins/jvectormap/jquery-jvectormap-2.0.2.min.js"></script>
+        <script src="../plugins/jvectormap/jquery-jvectormap-us-aea-en.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="~/assets/pages/jquery.analytics_dashboard.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+    <!-- File Js dùng chung -->
+    <script src="~/assets/js/common.js"></script>
+    <script src="~/assets/js/AlertService.js"></script>
+
+
+</body>
+
+
+<!-- Mirrored from mannatthemes.com/dastone/default/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Aug 2021 07:06:05 GMT -->
+</html>

@@ -16,39 +16,94 @@ namespace HanhChinhCong.Controllers
     public class HoSoController : Controller
     {
 
+        //Nộp hồ sơ
         public ActionResult Index()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId, 2, 6)) // 1: Cán bộ tiếp nhận
+                return new HttpStatusCodeResult(403);
             return View();
         }
 
         public ActionResult QuanLyHoSo()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId, 1)) // 1: admin
+                return new HttpStatusCodeResult(403);
             return View();
         }
 
         public ActionResult PhanCong()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId,4)) // 4: lãnh đạo
+                return new HttpStatusCodeResult(403);
             return View();
         }
 
         public ActionResult XuLy()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId, 3)) // 2: Cán bộ xử lý
+                return new HttpStatusCodeResult(403);
             return View();
         }
 
         public ActionResult DuyetKetQua()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId, 4)) // 4: Lãnh đạo
+                return new HttpStatusCodeResult(403);
             return View();
         }
 
         public ActionResult TraKetQua()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId, 5)) // 5: Cán bộ trả kết quả
+                return new HttpStatusCodeResult(403);
             return View();
         }
 
         public ActionResult HoSoSuaDoiBoSung()
         {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            if (!HasRole((int)userId, 2)) // 2: Cán bộ tiếp nhận
+                return new HttpStatusCodeResult(403);
             return View();
+        }
+
+        //Kiểm tra quyền
+        private bool HasRole(int userId, params int[] allowedRoleIds)
+        {
+            using (var db = new DbConnectContext())
+            {
+                var userRoles = db.UserRole.Where(ur => ur.UserId == userId).Select(ur => ur.RoleId).ToList();
+                // Nếu là admin thì luôn có quyền
+                if (userRoles.Contains(1)) return true;
+                return allowedRoleIds.Any(rid => userRoles.Contains(rid));
+            }
         }
 
 

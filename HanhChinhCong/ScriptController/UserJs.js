@@ -7,37 +7,16 @@
     $scope.totalRows = 0;
     $scope.totalPages = 1;
 
-
-    $scope.listRoles = [
-        { value: 0, label: 'Admin' },
-        { value: 1, label: 'Cán bộ tiếp nhận' },
-        { value: 2, label: 'Cán bộ xử lý' },
-        { value: 3, label: 'Lãnh đạo' },
-    ]
-    $scope.searchVaiTro = '';
-
+    $scope.listRoles = []; // Danh sách vai trò động
     $scope.listData = [];
 
-    //var getData = function () {
-    //    return $http({
-    //        url: "/User/GetList",
-    //        method: "GET",
-    //    }).then(function (res) {
-    //        $scope.listData = res.data.map(function (user) {
-    //            let userNew = { ...user };
-    //            const findRole = $scope.listRoles.filter((role) => user.VaiTro == role.value);
-    //            userNew.VaiTroText = findRole.length > 0 ? findRole[0].label : 'Không xác định';
-    //            return userNew;
-    //        });
-          
-    //    }).catch(function (err) {
-    //        console.log(err);
-    //    });
-    //}
+    $scope.searchRole = null;
+    $scope.newUser = null;
+    $scope.editingUser = null;
 
-    //getData(); 
-
-    $scope.newUser = {};
+    $http.get('/User/GetAllRoles').then(function (res) {
+        $scope.listRoles = res.data;
+    });
 
     $scope.addUser = function () {
         // Validate and send $scope.newUser to backend
@@ -92,26 +71,55 @@
     });
 
 
+    $scope.roles = []; // Danh sách role lấy từ backend
+
     $scope.loadUsers = function () {
-        $http.get('/User/GetPagedUsers', {
-            params: {
-                searchName: $scope.searchName,
-                searchVaiTro: $scope.searchVaiTro,
-                page: $scope.page,
-                pageSize: $scope.pageSize
-            }
-          
-        }).then(function (res) {
-            $scope.listData = res.data.data.map(function (user) {
-                let userNew = { ...user };
-                const findRole = $scope.listRoles.find(role => user.VaiTro == role.value);
-                userNew.VaiTroText = findRole ? findRole.label : 'Không xác định';
-                return userNew;
+        // Lấy danh sách role trước, sau đó lấy danh sách user
+        $http.get('/User/GetAllRoles').then(function (roleRes) {
+            $scope.roles = roleRes.data;
+
+            $http.get('/User/GetPagedUsers', {
+                params: {
+                    searchName: $scope.searchName,
+                    searchRole: $scope.searchRole,
+                    page: $scope.page,
+                    pageSize: $scope.pageSize
+                }
+            }).then(function (res) {
+                $scope.listData = res.data.data.map(function (user) {
+                    let userNew = { ...user };
+                    // Tìm role theo Id
+                    const findRole = $scope.roles.find(role => user.Role == role.Id);
+                    userNew.RoleText = findRole ? findRole.Name : 'Không xác định';
+                    return userNew;
+                });
+                $scope.totalRows = res.data.totalRows;
+                $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
             });
-            $scope.totalRows = res.data.totalRows;
-            $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
         });
     };
+
+
+    $scope.deleteUser = function (id) {
+        $scope.deleteUserId = id;
+        $('#confirmDeleteModal').modal('show');
+    };
+
+    $scope.confirmDelete = function () {
+        $('#confirmDeleteModal').modal('hide');
+        $http.post('/User/Delete', { id: $scope.deleteUserId })
+            .then(function (response) {
+                if (response.data.success) {
+                    $scope.search();
+                    AlertService.show('success', 'Xóa thành công!');
+                } else {
+                    AlertService.show('danger', response.data.message || 'Xóa thất bại!');
+                }
+            }, function () {
+                AlertService.show('danger', 'Đã có lỗi xảy ra!');
+            });
+    };
+
 
     $scope.search = function () {
         $scope.page = 1;

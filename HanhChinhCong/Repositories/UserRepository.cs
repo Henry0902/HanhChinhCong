@@ -14,7 +14,7 @@ public class UserRepository
         connectionString = ConfigurationManager.ConnectionStrings["DbConnectContext"].ConnectionString;
     }
 
-    public List<UserViewModel> SearchUsersWithPaging(string searchName, int? searchVaiTro, int page, int pageSize, out int totalRows)
+    public List<UserViewModel> SearchUsersWithPaging(string searchName, int? searchRole, int page, int pageSize, out int totalRows)
     {
         var users = new List<UserViewModel>();
         totalRows = 0;
@@ -24,7 +24,7 @@ public class UserRepository
         {
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
-            cmd.Parameters.AddWithValue("@SearchVaiTro", (object)searchVaiTro ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@SearchRole", (object)searchRole ?? DBNull.Value);
 
             cmd.Parameters.AddWithValue("@PageNumber", page);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
@@ -39,7 +39,7 @@ public class UserRepository
                     {
                         Id = Convert.ToInt32(reader["Id"]),
                         HoTen = reader["HoTen"].ToString(),
-                        VaiTro = Convert.ToInt32(reader["VaiTro"]),
+                        Role = Convert.ToInt32(reader["Role"]),
                         //UserName = reader["UserName"].ToString()
                     });
                 }
@@ -61,7 +61,7 @@ public class UserRepository
         using (var cmd = new SqlCommand("sp_GetAllCanBoXuLy", conn))
         {
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@VaiTro", vaiTro);
+            cmd.Parameters.AddWithValue("@Role", vaiTro);
             conn.Open();
             var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -70,7 +70,7 @@ public class UserRepository
                 {
                     Id = reader.GetInt32(0),
                     HoTen = reader.GetString(1),
-                    VaiTro = reader.GetInt32(2)
+                    Role = reader.GetInt32(2)
                 });
             }
         }

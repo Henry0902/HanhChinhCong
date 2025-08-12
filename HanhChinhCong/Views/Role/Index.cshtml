@@ -1,0 +1,106 @@
+﻿@{
+    ViewBag.Title = "Quản lý vai trò";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ScriptController/RoleJs.js"></script>
+
+<div class="row" ng-controller="RoleJs">
+    <h2 class="text-center">Quản lý vai trò hệ thống</h2>
+    <div class="col-md-12 mb-3">
+        <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Tìm kiếm tên vai trò" ng-model="searchName" />
+            <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
+            <button class="btn btn-primary" type="button" ng-click="openAddRoleModal()">Thêm mới</button>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên vai trò</th>
+                <th>Mô tả</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in listData">
+                <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Description}}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" ng-click="openEditRoleModal(item, $index)">Sửa</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteRole(item.Id)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" ng-class="{disabled: page === 1}">
+                <a class="page-link" href="#" ng-click="goToPage(page - 1)">&laquo;</a>
+            </li>
+            <li class="page-item" ng-repeat="i in [].constructor(totalPages) track by $index" ng-class="{active: page === ($index + 1)}">
+                <a class="page-link" href="#" ng-click="goToPage($index + 1)">{{$index + 1}}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: page === totalPages}">
+                <a class="page-link" href="#" ng-click="goToPage(page + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Thêm vai trò -->
+    <div class="modal fade" id="addRoleModal" tabindex="-1" aria-labelledby="addRoleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="addRoleForm" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addRoleModalLabel">Thêm vai trò mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label">Tên vai trò</label>
+                            <input type="text" class="form-control" ng-model="newRole.Name" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" ng-model="newRole.Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" ng-click="addRole()">Lưu</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa vai trò -->
+    <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form name="editRoleForm" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editRoleModalLabel">Sửa vai trò</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label">Tên vai trò</label>
+                            <input type="text" class="form-control" ng-model="editingRole.Name" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" ng-model="editingRole.Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" ng-click="editRoleSubmit()">Lưu</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

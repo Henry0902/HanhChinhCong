@@ -30,7 +30,7 @@
                 <td>{{item.TenPhongBan}}</td>
                 <td>
                     <button class="btn btn-warning" ng-click="editLinhVuc(item, $index)" data-bs-toggle="modal" data-bs-target="#myModal">Sửa</button>
-                    <button class="btn btn-danger" ng-click="deleteLinhVuc(item.Id)">Xóa</button>
+                    <button class="btn btn-danger" ng-click="deleteItem(item.Id)">Xóa</button>
                 </td>
             </tr>
         </tbody>
@@ -48,6 +48,26 @@
             </li>
         </ul>
     </nav>
+
+    <!-- Modal xác nhận xóa -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa mục này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" ng-click="confirmDelete()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Thêm/Sửa lĩnh vực -->
     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
