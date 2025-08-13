@@ -22,6 +22,12 @@
 
     $scope.showDetailModal = function (item) {
         $scope.detailHoSo = angular.copy(item);
+        $scope.detailFiles = [];
+        $http.get('/HoSo/GetFilesByHoSoId', { params: { hoSoId: item.Id } })
+            .then(function (res) {
+                $scope.detailFiles = res.data;
+                console.log("detailFiles", $scope.detailFiles);
+            });
         $http.get('/HoSo/GetQuaTrinhXuLyByHoSoId', { params: { hoSoId: item.Id } })
             .then(function (res) {
                 // Chuyển đổi ngày cho từng bản ghi

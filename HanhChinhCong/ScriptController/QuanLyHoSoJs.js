@@ -18,6 +18,10 @@
     $scope.trangThaiList = [];
     $scope.searchIdTrangThai = '';
 
+    $scope.isTiepNhan = !!window.IsTiepNhan;
+
+    console.log("adf:", $scope.isTiepNhan);
+
     //lấy list trạng thái hồ sơ
     $http.get('/HoSo/GetTrangThaiHoSo').then(function (res) {
         $scope.trangThaiList = res.data;
@@ -150,6 +154,11 @@
 
     $scope.showDetailModal = function (item) {
         $scope.detailHoSo = angular.copy(item);
+        $scope.detailFiles = [];
+        $http.get('/HoSo/GetFilesByHoSoId', { params: { hoSoId: item.Id } })
+            .then(function (res) {
+                $scope.detailFiles = res.data;
+            });
         $http.get('/HoSo/GetQuaTrinhXuLyByHoSoId', { params: { hoSoId: item.Id } })
             .then(function (res) {
                 // Chuyển đổi ngày cho từng bản ghi

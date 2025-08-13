@@ -87,10 +87,11 @@
                             <div class="mt-2" ng-if="selectedFilesTraKetQua.length">
                                 <strong>File đã chọn: {{selectedFilesTraKetQua.length}} file</strong>
                                 <ul>
-                                    <li ng-repeat="f in selectedFilesTraKetQua track by $index">
+                                    <li ng-repeat="f in selectedFilesTraKetQua track by $index" class="d-flex align-items-center gap-2 mb-2">
+                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFileTraKetQua($index)">Xóa</button>
                                         <i ng-class="getFileIcon(f.name)" class="me-2"></i>
                                         {{f.name}}
-                                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFileTraKetQua($index)">Xóa</button>
+
                                     </li>
                                 </ul>
                             </div>
@@ -129,6 +130,23 @@
                         <tr><th>Hạn xử lý</th><td>{{detailHoSo.HanXuLy | date:'dd/MM/yyyy'}}</td></tr>
                         <tr><th>Mô tả</th><td>{{detailHoSo.MoTa}}</td></tr>
                         <tr><th>Ghi chú</th><td>{{detailHoSo.GhiChu}}</td></tr>
+                        <tr>
+                            <th>File đính kèm</th>
+                            <td>
+                                <span ng-if="detailFiles.length">
+                                    <ul class="mb-0 ps-3">
+                                        <li ng-repeat="file in detailFiles">
+                                            <a ng-href="{{file.DuongDan}}" target="_blank">
+                                                <i ng-class="getFileIcon(file.TenFile)" class="me-2"></i>
+                                                {{file.TenFile}}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </span>
+                                <span ng-if="!detailFiles.length">Không có</span>
+                            </td>
+                        </tr>
+
                     </table>
 
                     <h6 class="mt-3">Quá trình xử lý hồ sơ</h6>

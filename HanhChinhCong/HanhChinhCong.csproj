@@ -337,6 +337,7 @@
     <Content Include="ScriptController\AccountJs.js" />
     <Content Include="ScriptController\RoleJs.js" />
     <Content Include="ScriptController\PhanQuyenJs.js" />
+    <Content Include="ScriptController\TheoDoiHoSoJs.js" />
     <Content Include="ScriptController\XuLyHoSoJs.js" />
     <Content Include="ScriptController\PhanCongJs.js" />
     <Content Include="ScriptController\LinhVucJs.js" />
@@ -443,6 +444,7 @@
     <Content Include="Views\Role\Index.cshtml" />
     <Content Include="Views\User\PhanQuyen.cshtml" />
     <Content Include="Views\Role\PhanQuyenTrang.cshtml" />
+    <Content Include="Views\HoSo\TheoDoiHoSo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

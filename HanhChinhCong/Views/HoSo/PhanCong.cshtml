@@ -82,10 +82,17 @@
                     <div class="modal-body">
                         <div>
                             <label class="form-label">Chọn cán bộ xử lý</label>
-                            <select class="form-control" ng-model="selectedCanBoXuLy" ng-options="user.HoTen for user in ListCanBoXuLy track by user.Id" required>
-                                <option value="">-- Chọn cán bộ --</option>
-                            </select>
+                            <div ng-repeat="user in ListCanBoXuLy track by user.Id" class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="canBoXuLy"
+                                       ng-model="$parent.selectedCanBoXuLy"
+                                       ng-value="user.Id"
+                                       required>
+                                <label class="form-check-label">{{user.HoTen}}</label>
+                            </div>
                         </div>
+
                         <div class="mt-2">
                             <label class="form-label">Ghi chú</label>
                             <textarea class="form-control" ng-model="GhiChu"></textarea>
@@ -97,13 +104,13 @@
                             <div class="mt-2" ng-if="selectedFiles.length">
                                 <strong>Đã chọn: {{selectedFiles.length}} file</strong>
                             </div>
-                            <ul class="mt-2" ng-if="selectedFiles.length">
-                                <li ng-repeat="f in selectedFiles track by $index">
-                                    <i ng-class="getFileIcon(f.name)" class="me-2"></i>
-                                    {{f.name}}
-                                    <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFile($index)">
+                            <ul>
+                                <li ng-repeat="f in selectedFiles track by $index" class="d-flex align-items-center gap-2 mb-2">
+                                    <button type="button" class="btn btn-sm btn-danger" ng-click="removeFile($index)">
                                         Xóa
                                     </button>
+                                    <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                                    {{f.name}}
                                 </li>
                             </ul>
                         </div>

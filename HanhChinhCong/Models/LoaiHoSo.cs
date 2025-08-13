@@ -12,6 +12,7 @@ namespace HanhChinhCong.Models
         public int Id { get; set; }
         public string TenLoaiHoSo { get; set; }
         public int IdLinhVuc { get; set; }
+        public string MaLoaiHoSo { get; set; }
     }
 
     public class LoaiHoSoViewModel
@@ -20,6 +21,7 @@ namespace HanhChinhCong.Models
         public string TenLoaiHoSo { get; set; }
         public int IdLinhVuc { get; set; }
         public string TenLinhVuc { get; set; }
+        public string MaLoaiHoSo { get; set; }
     }
 
 

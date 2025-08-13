@@ -35,6 +35,7 @@ public class LoaiHoSoRepository
                     loaiHoSoList.Add(new LoaiHoSoViewModel
                     {
                         Id = Convert.ToInt32(reader["Id"]),
+                        MaLoaiHoSo = reader["MaLoaiHoSo"].ToString(),
                         TenLoaiHoSo = reader["TenLoaiHoSo"].ToString(),
                         IdLinhVuc = Convert.ToInt32(reader["IdLinhVuc"]),
                         TenLinhVuc = reader["TenLinhVuc"].ToString()

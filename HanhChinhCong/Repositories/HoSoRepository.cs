@@ -253,6 +253,111 @@ public class HoSoRepository
     }
 
 
+    public List<HoSoInfo> GetHoSoDaXuLyByUser( int userId, string searchName,  string searchTenCongDan, string searchCMND_CCCD,  int? searchIdTrangThai,  int page, int pageSize,  out int totalRows)
+    {
+        var result = new List<HoSoInfo>();
+        totalRows = 0;
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_GetHoSoDaXuLyByUser", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
+            cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
+            cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
+            cmd.Parameters.AddWithValue("@SearchIdTrangThai", searchIdTrangThai ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@PageNumber", page);
+            cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
+            conn.Open();
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    result.Add(new HoSoInfo
+                    {
+                        Id = Convert.ToInt32(reader["Id"]),
+                        MaHoSo = reader["MaHoSo"].ToString(),
+                        TieuDe = reader["TieuDe"].ToString(),
+                        NgayTiepNhan = reader["NgayTiepNhan"] != DBNull.Value ? (DateTime?)reader["NgayTiepNhan"] : null,
+                        HanXuLy = reader["HanXuLy"] != DBNull.Value ? (DateTime?)reader["HanXuLy"] : null,
+                        TenCongDan = reader["TenCongDan"].ToString(),
+                        SoDienThoai = reader["SoDienThoai"].ToString(),
+                        CMND_CCCD = reader["CMND_CCCD"].ToString(),
+                        DiaChi = reader["DiaChi"].ToString(),
+                        Email = reader["Email"].ToString(),
+                        IdTrangThai = reader["IdTrangThai"] != DBNull.Value ? (int?)Convert.ToInt32(reader["IdTrangThai"]) : null,
+                        MoTa = reader["MoTa"] != DBNull.Value ? reader["MoTa"].ToString() : null,
+                        GhiChu = reader["GhiChu"] != DBNull.Value ? reader["GhiChu"].ToString() : null,
+                        TenLinhVuc = reader["TenLinhVuc"] != DBNull.Value ? reader["TenLinhVuc"].ToString() : null,
+                        TenLoaiHoSo = reader["TenLoaiHoSo"] != DBNull.Value ? reader["TenLoaiHoSo"].ToString() : null,
+                        // Nếu muốn lấy MaLoaiHoSo, bạn có thể thêm property vào HoSoInfo hoặc dùng dynamic
+                        MaLoaiHoSo = reader["MaLoaiHoSo"] != DBNull.Value ? reader["MaLoaiHoSo"].ToString() : null,
+                    });
+                }
+                if (reader.NextResult() && reader.Read())
+                {
+                    totalRows = Convert.ToInt32(reader["TotalRows"]);
+                }
+            }
+        }
+        return result;
+    }
+
+
+    //lấy hồ sơ theo cán bộ xử lý
+    public List<HoSoInfo> GetHoSoPhanCongXuLy(int? userId, string searchName, string searchTenCongDan, string searchCMND_CCCD, int? searchIdTrangThai, int page, int pageSize, out int totalRows)
+    {
+        var result = new List<HoSoInfo>();
+        totalRows = 0;
+        using (var conn = new SqlConnection(connectionString))
+        using (var cmd = new SqlCommand("sp_GetHoSoPhanCongXuLy", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@UserId", (object)userId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
+            cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
+            cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
+            cmd.Parameters.AddWithValue("@SearchIdTrangThai", searchIdTrangThai ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@PageNumber", page);
+            cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
+            conn.Open();
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    result.Add(new HoSoInfo
+                    {
+                        Id = Convert.ToInt32(reader["Id"]),
+                        MaHoSo = reader["MaHoSo"].ToString(),
+                        TieuDe = reader["TieuDe"].ToString(),
+                        NgayTiepNhan = reader["NgayTiepNhan"] != DBNull.Value ? (DateTime?)reader["NgayTiepNhan"] : null,
+                        HanXuLy = reader["HanXuLy"] != DBNull.Value ? (DateTime?)reader["HanXuLy"] : null,
+                        TenCongDan = reader["TenCongDan"].ToString(),
+                        SoDienThoai = reader["SoDienThoai"].ToString(),
+                        CMND_CCCD = reader["CMND_CCCD"].ToString(),
+                        DiaChi = reader["DiaChi"].ToString(),
+                        Email = reader["Email"].ToString(),
+                        IdTrangThai = reader["IdTrangThai"] != DBNull.Value ? (int?)Convert.ToInt32(reader["IdTrangThai"]) : null,
+                        MoTa = reader["MoTa"] != DBNull.Value ? reader["MoTa"].ToString() : null,
+                        GhiChu = reader["GhiChu"] != DBNull.Value ? reader["GhiChu"].ToString() : null,
+                        TenLinhVuc = reader["TenLinhVuc"] != DBNull.Value ? reader["TenLinhVuc"].ToString() : null,
+                        TenLoaiHoSo = reader["TenLoaiHoSo"] != DBNull.Value ? reader["TenLoaiHoSo"].ToString() : null,
+                        MaLoaiHoSo = reader["MaLoaiHoSo"] != DBNull.Value ? reader["MaLoaiHoSo"].ToString() : null,
+                    });
+                }
+
+                if (reader.NextResult() && reader.Read())
+                {
+                    totalRows = Convert.ToInt32(reader["TotalRows"]);
+                }
+            }
+        }
+        return result;
+    }
+
+
 
 
     public void DeleteHoSo(int id)

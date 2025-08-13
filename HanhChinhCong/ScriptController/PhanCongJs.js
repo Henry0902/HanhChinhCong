@@ -67,7 +67,7 @@
         // Tạo FormData để gửi cả dữ liệu và file
         var formData = new FormData();
         formData.append('hoSoId', $scope.selectedHoSo.Id);
-        formData.append('userId', $scope.selectedCanBoXuLy.Id);
+        formData.append('userId', $scope.selectedCanBoXuLy);
         formData.append('ghiChu', $scope.GhiChu);
 
         // Thêm file đính kèm (giả sử $scope.selectedFiles là mảng file đã chọn)

@@ -2,7 +2,13 @@
     ViewBag.Title = "Quản lý hồ sơ";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<script>
+    window.IsTiepNhan = @(ViewBag.IsTiepNhan.ToString().ToLower());
+</script>
+
 <script src="~/ScriptController/QuanLyHoSoJs.js"></script>
+
 
 <div class="row" ng-controller="QuanLyHoSoJs">
     <h2 class="text-center">Quản lý hồ sơ hành chính công</h2>
@@ -30,7 +36,7 @@
                 <th>Số điện thoại</th>
                 <th>CMND/CCCD</th>
                 <th>Trạng thái</th>
-                <th>Chức năng</th>
+                <th ng-if="!isTiepNhan">Chức năng</th>
             </tr>
         </thead>
         <tbody>
@@ -53,9 +59,9 @@
                     <span ng-if="item.IdTrangThai == 6" class="badge bg-danger">Sửa đổi bổ sung</span>
                 </td>
                 <td>
-                    <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)">Sửa</button>
+                    <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)" ng-if="!isTiepNhan">Sửa</button>
 
-                    <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)">Xóa</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)" ng-if="!isTiepNhan">Xóa</button>
                 </td>
             </tr>
         </tbody>
@@ -248,6 +254,23 @@
                         <tr><th>Hạn xử lý</th><td>{{detailHoSo.HanXuLy | date:'dd/MM/yyyy'}}</td></tr>
                         <tr><th>Mô tả</th><td>{{detailHoSo.MoTa}}</td></tr>
                         <tr><th>Ghi chú</th><td>{{detailHoSo.GhiChu}}</td></tr>
+                        <tr>
+                            <th>File đính kèm</th>
+                            <td>
+                                <span ng-if="detailFiles.length">
+                                    <ul class="mb-0 ps-3">
+                                        <li ng-repeat="file in detailFiles">
+                                            <a ng-href="{{file.DuongDan}}" target="_blank">
+                                                <i ng-class="getFileIcon(file.TenFile)" class="me-2"></i>
+                                                {{file.TenFile}}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </span>
+                                <span ng-if="!detailFiles.length">Không có</span>
+                            </td>
+                        </tr>
+
                     </table>
 
                     <h6 class="mt-3">Quá trình xử lý hồ sơ</h6>

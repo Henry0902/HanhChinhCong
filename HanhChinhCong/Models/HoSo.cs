@@ -60,8 +60,27 @@ namespace HanhChinhCong.Models
         public string TenLoaiHoSo { get; set; }
         public string TenCanBoTiepNhan { get; set; }
         public string TenCanBoXuLy { get; set; }
+        public string MaLoaiHoSo { get; set; }
 
     }
+
+    public class HoSoDaXuLyViewModel
+    {
+        public int Id { get; set; }
+        public string MaHoSo { get; set; }
+        public string TieuDe { get; set; }
+        public DateTime? NgayTiepNhan { get; set; }
+        public string TenCongDan { get; set; }
+        public string SoDienThoai { get; set; }
+        public string CMND_CCCD { get; set; }
+        public string DiaChi { get; set; }
+        public string Email { get; set; }
+        public int? IdTrangThai { get; set; }
+        public string Buoc { get; set; }
+        public DateTime? NgayXuLy { get; set; }
+        public string GhiChu { get; set; }
+    }
+
 
 
 

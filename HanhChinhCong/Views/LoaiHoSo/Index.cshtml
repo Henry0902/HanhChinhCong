@@ -10,17 +10,17 @@
 
     <div class="col-md-6">
         <form method="get" action="@Url.Action("Index", "User")" class="d-flex justify-content-end gap-2">
-            <input class="form-control" type="search" placeholder="Nhập tên cán bộ" ng-model="searchName" />
+            <input class="form-control" type="search" placeholder="Nhập tên loại hồ sơ" ng-model="searchName" />
             <button class="btn btn-outline-success" type="button" ng-click="search()">Search</button>
             <button type="button" class="btn btn-success" ng-click="openAddModal()">Thêm</button>
         </form>
-
 
     </div>
     <table class="table">
         <thead>
             <tr>
                 <th>STT</th>
+                <th>Mã Loại Hồ sơ</th>
                 <th>Tên Loại Hồ Sơ</th>
                 <th>Lĩnh Vực</th>
                 <th>Chức năng</th>
@@ -29,6 +29,7 @@
         <tbody>
             <tr ng-repeat="item in listData">
                 <td>{{$index + 1 + (page - 1) * pageSize}}</td>
+                <td>{{item.MaLoaiHoSo}}</td>
                 <td>{{item.TenLoaiHoSo}}</td>
                 <td>{{item.TenLinhVuc}}</td>
                 <td>
@@ -87,6 +88,13 @@
                 </div>
                 <div class="modal-body">
                     <form name="loaiHoSoForm" class="row g-3 needs-validation" novalidate>
+                        <div class="col-md-6">
+                            <label for="MaLoaiHoSo" class="form-label">Mã loại hồ sơ </label>
+                            <input type="text" class="form-control" id="MaLoaiHoSo" value="" required>
+                            <div class="invalid-feedback">
+                                Vui lòng điền mã loại hồ sơ.
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <label for="TenLoaiHoSo" class="form-label">Tên loại hồ sơ </label>
                             <input type="text" class="form-control" id="TenLoaiHoSo" value="" required>

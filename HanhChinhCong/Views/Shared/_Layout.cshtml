@@ -66,8 +66,8 @@
                 <li>
                     <a href="javascript: void(0);">   <i class="fa fa-folder-open align-self-center menu-icon"></i><span>Hồ sơ</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                     <ul class="nav-second-level" aria-expanded="false">
-                        <li class="nav-item" ng-if="hasRole(1,2,6)">
-                            <a href="@Url.Action("Index", "HoSo")" class="nav-link">Nộp hồ sơ</a>
+                        <li class="nav-item" ng-if="hasRole(1,2)">
+                            <a href="@Url.Action("Index", "HoSo")" class="nav-link">Tiếp nhận hồ sơ</a>
                         </li>
                         <li class="nav-item" ng-if="hasRole(1,4)">
                             <a href="@Url.Action("PhanCong", "HoSo")" class="nav-link">Phân công hồ sơ</a>
@@ -82,12 +82,15 @@
                             <a href="@Url.Action("TraKetQua", "HoSo")" class="nav-link">Trả kết quả hồ sơ</a>
                         </li>
                         <li class="nav-item" ng-if="hasRole(1,2)">
-                            <a href="@Url.Action("HoSoSuaDoiBoSung", "HoSo")" class="nav-link">Hồ sơ sửa đổi bổ sung</a>
+                            <a href="@Url.Action("HoSoSuaDoiBoSung", "HoSo")" class="nav-link">Sửa đổi bổ sung hồ sơ</a>
                         </li>
-                        <li class="nav-item" ng-if="hasRole(1)">
-                            <a href="@Url.Action("QuanLyHoSo", "HoSo")" class="nav-link">Quản lý hồ sơ</a>
+                        <li class="nav-item" ng-if="hasRole(1,3,4,5)">
+                            <a href="@Url.Action("TheoDoiHoSo", "HoSo")" class="nav-link">Theo dõi hồ sơ</a>
                         </li>
-                        
+                        <li class="nav-item" ng-if="hasRole(1,2)">
+                            <a href="@Url.Action("QuanLyHoSo", "HoSo")" class="nav-link">Quản lý hồ sơ đã tiếp nhận</a>
+                        </li>
+
                     </ul>
 
                 </li>

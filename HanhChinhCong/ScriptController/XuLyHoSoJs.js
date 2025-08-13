@@ -98,19 +98,20 @@
         });
     };
 
-    // Phân trang và tìm kiếm
+    // Phân trang và tìm kiếm chỉ lấy hồ sơ đã phân công cho cán bộ xử lý hiện tại
     $scope.loadHoSo = function () {
-        $http.get('/HoSo/GetPagedHoSo', {
+        $http.get('/HoSo/GetHoSoPhanCongXuLy', {
             params: {
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
-                searchIdTrangThai: 2,
+                searchIdTrangThai: 2, // hoặc để rỗng nếu muốn lấy tất cả trạng thái đã phân công
                 page: $scope.page,
                 pageSize: $scope.pageSize
             }
         }).then(function (res) {
-            res.data.data.forEach(function (item) {
+            var dataArr = res.data.data || [];
+            dataArr.forEach(function (item) {
                 if (item.NgayTiepNhan) {
                     var d = parseDotNetDate(item.NgayTiepNhan);
                     item.NgayTiepNhan = (d instanceof Date && !isNaN(d.getTime())) ? formatDate(d) : "";
@@ -120,14 +121,20 @@
                     item.HanXuLy = (d instanceof Date && !isNaN(d.getTime())) ? formatDate(d) : "";
                 }
             });
-            $scope.listData = res.data.data;
-            $scope.totalRows = res.data.totalRows;
+            $scope.listData = dataArr;
+            $scope.totalRows = res.data.totalRows || 0;
             $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
         });
     };
 
+
     $scope.showDetailModal = function (item) {
         $scope.detailHoSo = angular.copy(item);
+        $scope.detailFiles = [];
+        $http.get('/HoSo/GetFilesByHoSoId', { params: { hoSoId: item.Id } })
+            .then(function (res) {
+                $scope.detailFiles = res.data;
+            });
         $http.get('/HoSo/GetQuaTrinhXuLyByHoSoId', { params: { hoSoId: item.Id } })
             .then(function (res) {
                 // Chuyển đổi ngày cho từng bản ghi

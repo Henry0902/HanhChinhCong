@@ -23,7 +23,7 @@ namespace HanhChinhCong.Controllers
             if (userId == null)
                 return RedirectToAction("Index", "Login");
 
-            if (!HasRole((int)userId, 2, 6)) // 1: Cán bộ tiếp nhận
+            if (!HasRole((int)userId, 2)) // 1: Cán bộ tiếp nhận
                 return new HttpStatusCodeResult(403);
             return View();
         }
@@ -34,8 +34,17 @@ namespace HanhChinhCong.Controllers
             if (userId == null)
                 return RedirectToAction("Index", "Login");
 
-            if (!HasRole((int)userId, 1)) // 1: admin
+            if (!HasRole((int)userId, 1,2)) // 1: admin
                 return new HttpStatusCodeResult(403);
+
+            var isTiepNhan = false;
+            using (var db = new DbConnectContext())
+            {
+                var roles = db.UserRole.Where(ur => ur.UserId == (int)userId).Select(ur => ur.RoleId).ToList();
+                isTiepNhan = roles.Contains(2) && !roles.Contains(1); // chỉ là cán bộ tiếp nhận, không phải admin
+            }
+            ViewBag.IsTiepNhan = isTiepNhan;
+
             return View();
         }
 
@@ -94,6 +103,19 @@ namespace HanhChinhCong.Controllers
             return View();
         }
 
+        public ActionResult TheoDoiHoSo()
+        {
+            var userId = Session["UserId"];
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            // Cho phép các role: 2, 3, 4, 5
+            if (!HasRole((int)userId, 3, 4, 5))
+                return new HttpStatusCodeResult(403);
+            return View();
+        }
+
+
         //Kiểm tra quyền
         private bool HasRole(int userId, params int[] allowedRoleIds)
         {
@@ -127,6 +149,22 @@ namespace HanhChinhCong.Controllers
         [HttpPost]
         public JsonResult AddHoSo()
         {
+            // Lấy userId từ session
+            var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
+            var userRoles = new List<int>();
+
+            // Lấy danh sách role của user
+            if (userId != null)
+            {
+                using (var db = new HanhChinhCong.Models.DbConnectContext())
+                {
+                    userRoles = db.UserRole.Where(ur => ur.UserId == userId).Select(ur => ur.RoleId).ToList();
+                }
+            }
+
+            // Nếu là cán bộ tiếp nhận thì gán IdCanBoTiepNhan, nếu là công dân thì để null
+            int? idCanBoTiepNhan = (userRoles.Contains(2)) ? userId : null;
+
             var hoSo = new HoSo
             {
                 MaHoSo = Request.Form["MaHoSo"],
@@ -136,7 +174,7 @@ namespace HanhChinhCong.Controllers
                 HanXuLy = ParseDate(Request.Form["HanXuLy"]),
                 NgayHoanThanh = null, // Luôn để null khi nộp hồ sơ
                 GhiChu = Request.Form["GhiChu"],
-                IdCanBoTiepNhan = !string.IsNullOrEmpty(Request.Form["IdCanBoTiepNhan"]) ? (int?)Convert.ToInt32(Request.Form["IdCanBoTiepNhan"]) : null,
+                IdCanBoTiepNhan = idCanBoTiepNhan,
                 IdPhongBan = !string.IsNullOrEmpty(Request.Form["IdPhongBan"]) ? (int?)Convert.ToInt32(Request.Form["IdPhongBan"]) : null,
                 IdLinhVuc = !string.IsNullOrEmpty(Request.Form["IdLinhVuc"]) ? (int?)Convert.ToInt32(Request.Form["IdLinhVuc"]) : null,
                 IdLoaiHoSo = !string.IsNullOrEmpty(Request.Form["IdLoaiHoSo"]) ? (int?)Convert.ToInt32(Request.Form["IdLoaiHoSo"]) : null,
@@ -147,7 +185,7 @@ namespace HanhChinhCong.Controllers
                 Email = Request.Form["Email"]
             };
 
-            hoSo.IdTrangThai = 1; // đã tiếp nhận, chờ  phân công
+            hoSo.IdTrangThai = 1; // đã tiếp nhận, chờ phân công
 
             var repo = new HoSoRepository();
             int newHoSoId = repo.AddHoSo(hoSo);
@@ -167,6 +205,7 @@ namespace HanhChinhCong.Controllers
 
             return Json(new { success = true });
         }
+
 
 
 
@@ -565,7 +604,37 @@ namespace HanhChinhCong.Controllers
             }
         }
 
+        //lấy hồ sơ phân công theo cán bộ xử lý
+        [HttpGet]
+        public JsonResult GetHoSoPhanCongXuLy(string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "", int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
+        {
+            var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
+            if (userId == null)
+                return Json(new { success = false, message = "Chưa đăng nhập" }, JsonRequestBehavior.AllowGet);
 
+            bool isAdmin = false;
+            using (var db = new DbConnectContext())
+            {
+                isAdmin = db.UserRole.Any(ur => ur.UserId == userId && ur.RoleId == 1);
+            }
+
+            int totalRows;
+            var repo = new HoSoRepository();
+            var data = repo.GetHoSoPhanCongXuLy( isAdmin ? (int?)null : userId, searchName, searchTenCongDan,  searchCMND_CCCD,  searchIdTrangThai,   page,  pageSize,   out totalRows  );
+
+            return Json(new
+            {
+                data = data,
+                totalRows = totalRows,
+                page = page,
+                pageSize = pageSize
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+        // Lấy quá trình xử lý của hồ sơ
         [HttpGet]
         public JsonResult GetQuaTrinhXuLyByHoSoId(int hoSoId)
         {
@@ -574,6 +643,7 @@ namespace HanhChinhCong.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
 
+        // Lấy danh sách trạng thái hồ sơ
         [HttpGet]
         public JsonResult GetTrangThaiHoSo()
         {
@@ -581,6 +651,49 @@ namespace HanhChinhCong.Controllers
             var list = repo.GetTrangThaiHoSo();
             return Json(list, JsonRequestBehavior.AllowGet);
         }
+
+
+        // Sinh mã hồ sơ theo loại hồ sơ
+        [HttpGet]
+        public JsonResult GenerateMaHoSo(int idLoaiHoSo)
+        {
+            // Ví dụ: sinh mã theo loại hồ sơ, có thể thêm logic theo ngày/tháng/năm hoặc số thứ tự
+            using (var db = new DbConnectContext())
+            {
+                var loaiHoSo = db.LoaiHoSo.FirstOrDefault(lh => lh.Id == idLoaiHoSo);
+                if (loaiHoSo == null)
+                    return Json(new { maHoSo = "" }, JsonRequestBehavior.AllowGet);
+
+                // Đếm số hồ sơ đã có của loại này
+                int count = db.HoSo.Count(h => h.IdLoaiHoSo == idLoaiHoSo) + 1;
+                // Ví dụ mã: LOAI-[ID]-[SỐ THỨ TỰ]
+                string maHoSo = $"{loaiHoSo.MaLoaiHoSo ?? "LH"}-{idLoaiHoSo}-{count:D4}";
+                return Json(new { maHoSo = maHoSo }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetHoSoDaXuLyByUser(  string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "",  int? searchIdTrangThai = null, int page = 1,   int pageSize = 5)
+        {
+            var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
+            if (userId == null)
+                return Json(new { success = false, message = "Chưa đăng nhập" }, JsonRequestBehavior.AllowGet);
+
+            int totalRows;
+            var repo = new HoSoRepository();
+            var data = repo.GetHoSoDaXuLyByUser(    userId.Value,    searchName,    searchTenCongDan,  searchCMND_CCCD,    searchIdTrangThai,    page,   pageSize,  out totalRows
+            );
+
+            return Json(new
+            {
+                data = data,
+                totalRows = totalRows,
+                page = page,
+                pageSize = pageSize
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
 
 
 

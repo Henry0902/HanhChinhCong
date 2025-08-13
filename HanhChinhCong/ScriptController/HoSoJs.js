@@ -8,6 +8,19 @@
     $scope.listLinhVuc = [];
     $scope.listLoaiHoSo = [];
 
+    //Tạo mã hồ sơ
+    $scope.onLoaiHoSoChange = function () {
+        $scope.hoSo.MaHoSo = ""; // Reset mã hồ sơ trước khi lấy mới
+        if ($scope.hoSo.IdLoaiHoSo) {
+            $http.get('/HoSo/GenerateMaHoSo', { params: { idLoaiHoSo: $scope.hoSo.IdLoaiHoSo } })
+                .then(function (res) {
+                    $scope.hoSo.MaHoSo = res.data.maHoSo;
+                });
+        }
+        // Nếu bạn đã có hàm lấy loại hồ sơ, gọi nó ở đây nếu cần
+    };
+
+
     // Lấy danh sách phòng ban
     $scope.loadPhongBan = function () {
         $http.get('/PhongBan/GetList').then(function (res) {
@@ -76,6 +89,7 @@
                 $scope.hoSo.NgayTiepNhan = new Date().toISOString().slice(0, 10);
                 $scope.selectedFiles = [];
                 form.reset();
+                form.classList.remove('was-validated');
             } else {
                 AlertService && AlertService.show('danger', 'Nộp hồ sơ thất bại!');
             }
@@ -115,12 +129,30 @@
         return [year, month, day].join('-');
     }
 
-    // Chuyển tên công dân sang chữ hoa
-    $scope.capitalizeName = function () {
-        if ($scope.hoSo.TenCongDan) {
-            $scope.hoSo.TenCongDan = $scope.hoSo.TenCongDan.toUpperCase();
+    // Chuyển sang chữ hoa
+    $scope.toUpperField = function (fieldName) {
+        if ($scope.hoSo[fieldName]) {
+            $scope.hoSo[fieldName] = $scope.hoSo[fieldName].toUpperCase();
         }
     };
+
+    $scope.getFileIcon = function (fileName) {
+        if (!fileName) return 'fa-solid fa-file';
+        var ext = fileName.split('.').pop().toLowerCase();
+        switch (ext) {
+            case 'pdf': return 'fa-solid fa-file-pdf text-danger';
+            case 'doc':
+            case 'docx': return 'fa-solid fa-file-word text-primary';
+            case 'xls':
+            case 'xlsx': return 'fa-solid fa-file-excel text-success';
+            case 'ppt':
+            case 'pptx': return 'fa-solid fa-file-powerpoint text-warning';
+            default: return 'fa-solid fa-file';
+        }
+    };
+
+
+
 
     // Khởi tạo dữ liệu động
     $scope.loadPhongBan();

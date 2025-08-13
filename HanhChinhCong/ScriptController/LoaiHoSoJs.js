@@ -33,6 +33,7 @@
         $('#TenLoaiHoSo').val(item.TenLoaiHoSo);
         $scope.selectedLinhVuc = item.IdLinhVuc;
         $('#IdLinhVuc').val(item.IdLinhVuc);
+        $('#MaLoaiHoSo').val(item.MaLoaiHoSo);
         $scope.loadLinhVucDropdown();
         $('#myModal').modal('show');
     };
@@ -46,7 +47,8 @@
         var loaiHoSoData = {
             Id: $scope.editingLoaiHoSo ? $scope.editingLoaiHoSo.Id : 0,
             TenLoaiHoSo: $('#TenLoaiHoSo').val(),
-            IdLinhVuc: $scope.selectedLinhVuc
+            IdLinhVuc: $scope.selectedLinhVuc,
+            MaLoaiHoSo: $('#MaLoaiHoSo').val()
         };
         if ($scope.editingLoaiHoSo) {
             // Sửa loại hồ sơ

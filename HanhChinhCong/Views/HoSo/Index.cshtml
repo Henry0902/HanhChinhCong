@@ -6,38 +6,43 @@
 
 <div class="row justify-content-center" ng-controller="HoSoJs">
     <div class="col-md-8">
-        <h2 class="text-center mb-4">Nộp hồ sơ hành chính công</h2>
+        <h2 class="text-center mb-4">Tiếp nhận hồ sơ hành chính công</h2>
         <form name="nopHoSoForm" class="row g-3 needs-validation" novalidate>
 
             <div class="col-md-6">
-                <label class="form-label">Phòng ban</label>
+                <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
                 <select class="form-control" ng-model="hoSo.IdPhongBan" ng-options="pb.Id as pb.TenPhongBan for pb in listPhongBan" ng-change="onPhongBanChange()" required>
                     <option value="">-- Chọn phòng ban --</option>
                 </select>
                 <div class="invalid-feedback">Vui lòng chọn phòng ban.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Lĩnh vực</label>
+                <label class="form-label">Lĩnh vực <span class="text-danger">*</span></label>
                 <select class="form-control" ng-model="hoSo.IdLinhVuc" ng-options="lv.Id as lv.TenLinhVuc for lv in listLinhVuc" ng-change="onLinhVucChange()" ng-disabled="!listLinhVuc.length" required>
                     <option value="">-- Chọn lĩnh vực --</option>
                 </select>
                 <div class="invalid-feedback">Vui lòng chọn lĩnh vực.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Loại hồ sơ</label>
-                <select class="form-control" ng-model="hoSo.IdLoaiHoSo" ng-options="lh.Id as lh.TenLoaiHoSo for lh in listLoaiHoSo" ng-disabled="!listLoaiHoSo.length" required>
+                <label class="form-label">Loại hồ sơ <span class="text-danger">*</span></label>
+                <select class="form-control"
+                        ng-model="hoSo.IdLoaiHoSo"
+                        ng-options="lh.Id as lh.TenLoaiHoSo for lh in listLoaiHoSo"
+                        ng-change="onLoaiHoSoChange()"
+                        ng-disabled="!listLoaiHoSo.length"
+                        required>
                     <option value="">-- Chọn loại hồ sơ --</option>
                 </select>
+
                 <div class="invalid-feedback">Vui lòng chọn loại hồ sơ.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Mã hồ sơ</label>
-                <input type="text" class="form-control" ng-model="hoSo.MaHoSo" required>
+                <label class="form-label">Mã hồ sơ <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" ng-model="hoSo.MaHoSo" ng-change="toUpperField('MaHoSo')" required>
                 <div class="invalid-feedback">Vui lòng nhập mã hồ sơ.</div>
             </div>
-
             <div class="col-md-12">
-                <label class="form-label">Tiêu đề hồ sơ</label>
+                <label class="form-label">Tiêu đề hồ sơ <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" ng-model="hoSo.TieuDe" required>
                 <div class="invalid-feedback">Vui lòng nhập tiêu đề hồ sơ.</div>
             </div>
@@ -46,17 +51,17 @@
             <hr />
 
             <div class="col-md-6">
-                <label class="form-label">Tên người nộp</label>
-                <input type="text" class="form-control" ng-model="hoSo.TenCongDan" ng-blur="capitalizeName()" required>
+                <label class="form-label">Tên người nộp <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" ng-model="hoSo.TenCongDan" ng-blur="toUpperField('TenCongDan')" required>
                 <div class="invalid-feedback">Vui lòng nhập tên người nộp.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Số điện thoại</label>
+                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" ng-model="hoSo.SoDienThoai" required>
                 <div class="invalid-feedback">Vui lòng nhập số điện thoại.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">CMND/CCCD</label>
+                <label class="form-label">CMND/CCCD <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" ng-model="hoSo.CMND_CCCD" required>
                 <div class="invalid-feedback">Vui lòng nhập CMND/CCCD.</div>
             </div>
@@ -66,7 +71,7 @@
                 <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Địa chỉ</label>
+                <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" ng-model="hoSo.DiaChi" required>
                 <div class="invalid-feedback">Vui lòng nhập địa chỉ.</div>
             </div>
@@ -76,12 +81,12 @@
             </div>
 
             <div class="col-md-4">
-                <label class="form-label">Ngày tiếp nhận</label>
+                <label class="form-label">Ngày tiếp nhận <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" ng-model="hoSo.NgayTiepNhan" ng-value="hoSo.NgayTiepNhan" required>
                 <div class="invalid-feedback">Vui lòng chọn ngày tiếp nhận.</div>
             </div>
             <div class="col-md-4">
-                <label class="form-label">Hạn xử lý</label>
+                <label class="form-label">Hạn xử lý <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" ng-model="hoSo.HanXuLy" required>
                 <div class="invalid-feedback">Vui lòng chọn hạn xử lý.</div>
             </div>
@@ -97,25 +102,28 @@
                 <div class="invalid-feedback">Vui lòng nhập mô tả.</div>
             </div>
             <div class="col-md-12">
-                <label class="form-label">Đính kèm file</label>
+                <label class="form-label">Đính kèm file <span class="text-danger">*</span></label>
                 <input type="file" class="form-control" id="fileDinhKem" multiple onchange="angular.element(this).scope().onFileChange(this.files)" required />
                 <div class="invalid-feedback">Vui lòng chọn file đính kèm.</div>
                 <div class="mt-2" ng-if="selectedFiles.length">
                     <strong>Đã chọn: {{selectedFiles.length}} file</strong>
                 </div>
-                <ul class="mt-2" ng-if="selectedFiles.length">
-                    <li ng-repeat="f in selectedFiles track by $index">
-                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
-                        {{f.name}}
-                        <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFile($index)">
+                <ul>
+                    <li ng-repeat="f in selectedFiles track by $index" class="d-flex align-items-center gap-2 mb-2">
+                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeFile($index)">
                             Xóa
                         </button>
+                        <i ng-class="getFileIcon(f.name)" class="me-2"></i>
+                        {{f.name}}
                     </li>
                 </ul>
             </div>
 
             <div class="col-md-12 text-center">
                 <button class="btn btn-primary" type="button" ng-click="nopHoSo()">Nộp hồ sơ</button>
+            </div>
+            <div class="col-md-12 mt-2">
+                <span class="text-danger">*</span> là mục bắt buộc cần nhập.
             </div>
         </form>
     </div>
