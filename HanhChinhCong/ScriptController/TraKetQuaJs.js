@@ -3,6 +3,7 @@
     $scope.searchName = '';
     $scope.searchTenCongDan = '';
     $scope.searchCMND_CCCD = '';
+    $scope.searchMaHoSo = '';
     $scope.page = 1;
     $scope.pageSize = 5;
     $scope.totalRows = 0;
@@ -94,14 +95,19 @@
     };
 
     $scope.traKetQuaHoSo = function () {
+        $scope.traKetQuaFileError = '';
+        // Kiểm tra bắt buộc phải có file đính kèm
+        if (!$scope.selectedFilesTraKetQua || $scope.selectedFilesTraKetQua.length === 0) {
+            $scope.traKetQuaFileError = 'Vui lòng đính kèm ít nhất một file kết quả!';
+            return;
+        }
+
         var formData = new FormData();
         formData.append('hoSoId', $scope.editingHoSo.Id);
         formData.append('ghiChuTraKetQua', $scope.editingHoSo.GhiChuTraKetQua);
 
-        if ($scope.selectedFilesTraKetQua && $scope.selectedFilesTraKetQua.length > 0) {
-            for (var i = 0; i < $scope.selectedFilesTraKetQua.length; i++) {
-                formData.append('FileTraKetQua', $scope.selectedFilesTraKetQua[i]);
-            }
+        for (var i = 0; i < $scope.selectedFilesTraKetQua.length; i++) {
+            formData.append('FileTraKetQua', $scope.selectedFilesTraKetQua[i]);
         }
 
         $http.post('/HoSo/TraKetQuaHoSo', formData, {
@@ -111,6 +117,12 @@
             if (res.data.success) {
                 $('#traKetQuaModal').modal('hide');
                 $scope.loadHoSo();
+                $scope.editingHoSo = {};
+                $scope.selectedFilesTraKetQua = [];
+                $scope.traKetQuaFileError = '';
+                // Reset input file
+                var fileInput = document.getElementById('fileTraKetQua');
+                if (fileInput) fileInput.value = '';
                 AlertService && AlertService.show('success', 'Trả kết quả thành công!');
             } else {
                 AlertService && AlertService.show('danger', 'Trả kết quả thất bại!');
@@ -118,9 +130,11 @@
         });
     };
 
+
     $scope.loadHoSo = function () {
         $http.get('/HoSo/GetPagedHoSo', {
             params: {
+                searchMaHoSo: $scope.searchMaHoSo,
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,

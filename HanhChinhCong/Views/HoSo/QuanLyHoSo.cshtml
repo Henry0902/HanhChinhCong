@@ -14,9 +14,11 @@
     <h2 class="text-center">Quản lý hồ sơ hành chính công</h2>
     <div class="col-md-12 mb-3">
         <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Mã hồ sơ" ng-model="searchMaHoSo" />
             <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
             <input class="form-control" type="search" placeholder="Tên công dân" ng-model="searchTenCongDan" />
             <input class="form-control" type="search" placeholder="CMND/CCCD" ng-model="searchCMND_CCCD" />
+
             <select class="form-select" ng-model="searchIdTrangThai">
                 <option value="">-- Tất cả trạng thái --</option>
                 <option ng-repeat="tt in trangThaiList" value="{{tt.Id}}">{{tt.TenTrangThai}}</option>
@@ -24,7 +26,16 @@
 
             <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
         </form>
+        @*<label class="align-self-center ms-2">
+                <input type="checkbox" ng-model="searchSapHetHan" ng-change="search()" />
+                Chỉ hiển thị hồ sơ sắp hết hạn xử lý
+            </label>*@
     </div>
+    <span class="align-self-center ms-2">
+        <input type="checkbox" ng-model="searchSapHetHan" ng-change="search()" />
+        <span>Chỉ hiển thị hồ sơ sắp hết hạn xử lý</span>
+    </span>
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -35,12 +46,13 @@
                 <th>Người nộp</th>
                 <th>Số điện thoại</th>
                 <th>CMND/CCCD</th>
+                <th>Cán bộ xử lý</th>
                 <th>Trạng thái</th>
-                <th ng-if="!isTiepNhan">Chức năng</th>
+                <th ng-if="!isTiepNhan" style="width: 160px;">Chức năng</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in listData">
+            <tr ng-repeat="item in listData" ng-class="{'table-danger': item.SapHetHan}">
                 <td>{{$index + 1 + (page - 1) * pageSize}}</td>
                 <td>{{item.MaHoSo}}</td>
                 <td>
@@ -50,6 +62,7 @@
                 <td>{{item.TenCongDan}}</td>
                 <td>{{item.SoDienThoai}}</td>
                 <td>{{item.CMND_CCCD}}</td>
+                <td>{{item.TenCanBoXuLy}}</td>
                 <td>
                     <span ng-if="item.IdTrangThai == 1" class="badge bg-secondary">Chờ phân công</span>
                     <span ng-if="item.IdTrangThai == 2" class="badge bg-warning">Chờ xử lý</span>
@@ -57,11 +70,17 @@
                     <span ng-if="item.IdTrangThai == 4" class="badge bg-info">Chờ trả kết quả</span>
                     <span ng-if="item.IdTrangThai == 5" class="badge bg-success">Đã trả kết quả</span>
                     <span ng-if="item.IdTrangThai == 6" class="badge bg-danger">Sửa đổi bổ sung</span>
+                    <span ng-if="item.IdTrangThai == 9" class="badge bg-dark">Đã rút hồ sơ</span>
+
                 </td>
                 <td>
                     <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)" ng-if="!isTiepNhan">Sửa</button>
 
                     <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)" ng-if="!isTiepNhan">Xóa</button>
+
+                    <button class="btn btn-secondary btn-sm" ng-click="showRutHoSoModal(item)" ng-if="item.IdTrangThai != 9">Rút hồ sơ</button>
+
+                    <button class="btn btn-success btn-sm" ng-click="showEditModal(item)" ng-if="item.IdTrangThai == 9">Nộp lại hồ sơ</button>
                 </td>
             </tr>
         </tbody>
@@ -79,6 +98,32 @@
             </li>
         </ul>
     </nav>
+
+
+
+    @*xác nhận rút hồ sơ*@
+    <div class="modal fade" id="rutHoSoModal" tabindex="-1" aria-labelledby="rutHoSoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rutHoSoModalLabel">Xác nhận rút hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>Ghi chú (nếu có):</label>
+                        <textarea class="form-control" ng-model="rutHoSoGhiChu"></textarea>
+                    </div>
+                    Bạn có chắc chắn muốn rút hồ sơ này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" ng-click="confirmRutHoSo()">Rút hồ sơ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal xác nhận xóa -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -313,6 +358,12 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Thông báo chú thích bôi đỏ đặt ở cuối trang -->
+    <div class="alert alert-danger mt-3" role="alert">
+        <i class="fa fa-exclamation-triangle"></i>
+        <strong>Chú ý:</strong> Hồ sơ được bôi đỏ là những hồ sơ sắp hết hạn xử lý (còn 1 ngày hoặc ít hơn).
     </div>
 
 </div>

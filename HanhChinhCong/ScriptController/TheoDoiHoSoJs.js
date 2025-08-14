@@ -7,6 +7,7 @@
     $scope.searchName = '';
     $scope.searchTenCongDan = '';
     $scope.searchCMND_CCCD = '';
+    $scope.searchMaHoSo = '';
 
     $scope.detailHoSo = {};
     $scope.detailQuaTrinh = [];
@@ -18,6 +19,8 @@
     $scope.trangThaiList = [];
     $scope.searchIdTrangThai = '';
 
+    $scope.searchSapHetHan = ''; // hoặc '' nếu muốn có 3 trạng thái (tất cả/đúng/sai)
+
     //lấy list trạng thái hồ sơ
     $http.get('/HoSo/GetTrangThaiHoSo').then(function (res) {
         $scope.trangThaiList = res.data;
@@ -27,6 +30,7 @@
     $scope.loadHoSo = function () {
         $http.get('/HoSo/GetHoSoDaXuLyByUser', {
             params: {
+                searchMaHoSo: $scope.searchMaHoSo,
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
@@ -138,6 +142,9 @@
             transformRequest: angular.identity
         }).then(function (res) {
             if (res.data.success) {
+                // Reset input file
+                var fileInput = document.getElementById('fileTraKetQua');
+                if (fileInput) fileInput.value = '';
                 $scope.loadHoSo();
                 $('#hoSoModal').modal('hide');
                 AlertService && AlertService.show('success', 'Sửa thành công!');

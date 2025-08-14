@@ -29,6 +29,9 @@ namespace HanhChinhCong.Models
         public string Email { get; set; }
 
         public int? IdCanBoXuLy { get; set; }
+        public int? IdLanhDao { get; set; }
+        public int? IdCanBoTraKetQua { get; set; }
+
 
     }
 
@@ -60,6 +63,9 @@ namespace HanhChinhCong.Models
         public string TenLoaiHoSo { get; set; }
         public string TenCanBoTiepNhan { get; set; }
         public string TenCanBoXuLy { get; set; }
+        public string TenLanhDao { get; set; }
+        public string TenCanBoTraKetQua { get; set; }
+
         public string MaLoaiHoSo { get; set; }
 
     }

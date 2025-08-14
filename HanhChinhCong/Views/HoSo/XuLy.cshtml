@@ -8,6 +8,7 @@
     <h2 class="text-center">Xử lý hồ sơ hành chính công</h2>
     <div class="col-md-12 mb-3">
         <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Mã hồ sơ" ng-model="searchMaHoSo" />
             <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
             <input class="form-control" type="search" placeholder="Tên công dân" ng-model="searchTenCongDan" />
             <input class="form-control" type="search" placeholder="CMND/CCCD" ng-model="searchCMND_CCCD" />
@@ -24,6 +25,7 @@
                 <th>Người nộp</th>
                 <th>Số điện thoại</th>
                 <th>CMND/CCCD</th>
+                <th>Cán bộ xử lý</th>
                 <th>Trạng thái</th>
                 <th>Chức năng</th>
             </tr>
@@ -39,6 +41,7 @@
                 <td>{{item.TenCongDan}}</td>
                 <td>{{item.SoDienThoai}}</td>
                 <td>{{item.CMND_CCCD}}</td>
+                <td>{{item.TenCanBoXuLy}}</td>
                 <td>
                     <span ng-if="item.IdTrangThai == 1" class="badge bg-secondary">Chờ phân công</span>
                     <span ng-if="item.IdTrangThai == 2" class="badge bg-warning">Chờ xử lý</span>

@@ -38,7 +38,7 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label">Mã hồ sơ <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" ng-model="hoSo.MaHoSo" ng-change="toUpperField('MaHoSo')" required>
+                <input type="text" class="form-control" ng-model="hoSo.MaHoSo" ng-change="toUpperField('MaHoSo')" disabled required>
                 <div class="invalid-feedback">Vui lòng nhập mã hồ sơ.</div>
             </div>
             <div class="col-md-12">
@@ -122,8 +122,10 @@
             <div class="col-md-12 text-center">
                 <button class="btn btn-primary" type="button" ng-click="nopHoSo()">Nộp hồ sơ</button>
             </div>
-            <div class="col-md-12 mt-2">
-                <span class="text-danger">*</span> là mục bắt buộc cần nhập.
+            <!-- Thông báo chú thích bôi đỏ đặt ở cuối trang -->
+            <div class="alert alert-danger mt-3" role="alert">
+                <i class="fa fa-exclamation-triangle"></i>
+                <strong>Chú ý:</strong> <span class="text-danger">(*)</span> là mục bắt buộc cần nhập
             </div>
         </form>
     </div>

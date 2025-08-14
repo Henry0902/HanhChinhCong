@@ -3,6 +3,7 @@
     $scope.searchName = '';
     $scope.searchTenCongDan = '';
     $scope.searchCMND_CCCD = '';
+    $scope.searchMaHoSo = '';
     $scope.page = 1;
     $scope.pageSize = 5;
     $scope.totalRows = 0;
@@ -14,6 +15,8 @@
 
     $scope.detailHoSo = {};
     $scope.detailQuaTrinh = [];
+
+
 
     $scope.showDuyetModal = function (item) {
         $scope.editingHoSo = angular.copy(item);
@@ -140,6 +143,9 @@
         }).then(function (res) {
             if (res.data.success) {
                 $('#duyetModal').modal('hide');
+                // Reset input file
+                var fileInput = document.getElementById('fileTraKetQua');
+                if (fileInput) fileInput.value = '';
                 $scope.loadHoSo();
                 AlertService && AlertService.show('success', 'Duyệt kết quả thành công!');
             } else {
@@ -151,6 +157,7 @@
     $scope.loadHoSo = function () {
         $http.get('/HoSo/GetPagedHoSo', {
             params: {
+                searchMaHoSo: $scope.searchMaHoSo,
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
