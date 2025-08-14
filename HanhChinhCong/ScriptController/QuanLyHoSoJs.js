@@ -1,7 +1,7 @@
 ﻿app.controller('QuanLyHoSoJs', function ($scope, $http, AlertService) {
     $scope.listData = [];
     $scope.page = 1;
-    $scope.pageSize = 5;
+    $scope.pageSize = 10;
     $scope.totalRows = 0;
     $scope.totalPages = 1;
     $scope.searchName = '';
@@ -34,15 +34,31 @@
     $scope.loadHoSo = function () {
         $http.get('/HoSo/GetPagedHoSo', {
             params: {
+                searchMaHoSo: $scope.searchMaHoSo,
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
+                searchSapHetHan: $scope.searchSapHetHan,
                 searchIdTrangThai: $scope.searchIdTrangThai,
+                
                 page: $scope.page,
                 pageSize: $scope.pageSize
             }
         }).then(function (res) {
-            res.data.data.forEach(function (item) {
+            var dataArr = [];
+            if (res.data && Array.isArray(res.data.data)) {
+                dataArr = res.data.data;
+                $scope.totalRows = res.data.totalRows || dataArr.length;
+            } else if (Array.isArray(res.data)) {
+                dataArr = res.data;
+                $scope.totalRows = dataArr.length;
+            } else {
+                dataArr = [];
+                $scope.totalRows = 0;
+            }
+
+            // Xét hạn xử lý
+            dataArr.forEach(function (item) {
                 if (item.NgayTiepNhan) {
                     var d = parseDotNetDate(item.NgayTiepNhan);
                     item.NgayTiepNhan = (d instanceof Date && !isNaN(d.getTime())) ? formatDate(d) : "";
@@ -50,13 +66,32 @@
                 if (item.HanXuLy) {
                     var d = parseDotNetDate(item.HanXuLy);
                     item.HanXuLy = (d instanceof Date && !isNaN(d.getTime())) ? formatDate(d) : "";
+                    // Tính ngày sắp hết hạn
+                    var hanXuLyDate = new Date(item.HanXuLy);
+                    var now = new Date();
+                    var diffMs = hanXuLyDate - now;
+                    var diffDays = diffMs / (1000 * 60 * 60 * 24);
+                    // Bôi đỏ nếu còn <= 1 ngày, chưa quá hạn và chưa trả kết quả
+                    // Bôi đỏ nếu hạn xử lý là hôm nay hoặc còn <= 1 ngày, chưa quá hạn và chưa trả kết quả
+                    var hanXuLyDateOnly = new Date(hanXuLyDate.getFullYear(), hanXuLyDate.getMonth(), hanXuLyDate.getDate());
+                    var nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    var diffDaysOnly = (hanXuLyDateOnly - nowDateOnly) / (1000 * 60 * 60 * 24);
+                    item.SapHetHan = (
+                        (diffDaysOnly === 0 || (diffDaysOnly < 1 && diffDaysOnly > 0) || diffDaysOnly === 1)
+                        && diffDaysOnly >= 0
+                        && item.IdTrangThai != 5
+                    );
+
+                } else {
+                    item.SapHetHan = false;
                 }
             });
-            $scope.listData = res.data.data;
-            $scope.totalRows = res.data.totalRows;
+
+            $scope.listData = dataArr;
             $scope.totalPages = Math.ceil($scope.totalRows / $scope.pageSize);
         });
     };
+
 
     $scope.search = function () {
         $scope.page = 1;
@@ -125,6 +160,9 @@
             transformRequest: angular.identity
         }).then(function (res) {
             if (res.data.success) {
+                // Reset input file
+                var fileInput = document.getElementById('fileTraKetQua');
+                if (fileInput) fileInput.value = '';
                 $scope.loadHoSo();
                 $('#hoSoModal').modal('hide');
                 AlertService && AlertService.show('success', 'Sửa thành công!');
@@ -203,6 +241,27 @@
         });
         return grouped;
     }
+
+    //rút hồ sơ
+    $scope.showRutHoSoModal = function (item) {
+        $scope.rutHoSoItem = item;
+        $scope.rutHoSoGhiChu = '';
+        $('#rutHoSoModal').modal('show');
+    };
+
+    $scope.confirmRutHoSo = function () {
+        $http.post('/HoSo/RutHoSo', { hoSoId: $scope.rutHoSoItem.Id, ghiChu: $scope.rutHoSoGhiChu })
+            .then(function (res) {
+                if (res.data.success) {
+                    $scope.loadHoSo();
+                    $('#rutHoSoModal').modal('hide');
+                    AlertService && AlertService.show('success', 'Rút hồ sơ thành công!');
+                } else {
+                    AlertService && AlertService.show('danger', res.data.message || 'Rút hồ sơ thất bại!');
+                }
+            });
+    };
+
 
 
     $scope.getFileIcon = function (filePath) {

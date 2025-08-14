@@ -130,12 +130,13 @@ namespace HanhChinhCong.Controllers
 
 
         [HttpGet]
-        public JsonResult GetPagedHoSo(string searchName, string searchTenCongDan, string searchCMND_CCCD, int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
+        public JsonResult GetPagedHoSo(string searchMaHoSo, string searchName, string searchTenCongDan, string searchCMND_CCCD, bool? searchSapHetHan, int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
         {
             var repo = new HoSoRepository();
             int totalRows;
-            var data = repo.SearchHoSoWithPaging(searchName, searchTenCongDan, searchCMND_CCCD, searchIdTrangThai, page, pageSize, out totalRows);
-
+            var data = repo.SearchHoSoWithPaging(searchMaHoSo, searchName, searchTenCongDan, searchCMND_CCCD, searchSapHetHan, searchIdTrangThai, page, pageSize, out totalRows);
+            //var data = repo.SearchHoSoWithPagingLinq(searchMaHoSo, searchName, searchTenCongDan, searchCMND_CCCD, searchSapHetHan, searchIdTrangThai, page, pageSize);
+            //totalRows = data.Count;
             return Json(new
             {
                 data = data,
@@ -163,7 +164,7 @@ namespace HanhChinhCong.Controllers
             }
 
             // Nếu là cán bộ tiếp nhận thì gán IdCanBoTiepNhan, nếu là công dân thì để null
-            int? idCanBoTiepNhan = (userRoles.Contains(2)) ? userId : null;
+            int? idCanBoTiepNhan = (userRoles.Contains(1) || userRoles.Contains(2)) ? userId : null;
 
             var hoSo = new HoSo
             {
@@ -394,7 +395,7 @@ namespace HanhChinhCong.Controllers
                         file.SaveAs(savePath);
                         var fileDinhKem = "/Uploads/PhanCongHoSo/" + fileName;
                         success = repo.PhanCongHoSo(hoSoId, userId, ghiChu, fileDinhKem);
-                        repo.AddQuaTrinhXuLyHoSo(hoSoId, "Phân công", ghiChu, fileDinhKem, userId);
+                        repo.AddQuaTrinhXuLyHoSo(hoSoId, "Phân công", ghiChu, fileDinhKem, idlanhdao);
                     }
                 }
             }
@@ -403,7 +404,7 @@ namespace HanhChinhCong.Controllers
             if (!hasFile)
             {
                 success = repo.PhanCongHoSo(hoSoId, userId, ghiChu, null);
-                repo.AddQuaTrinhXuLyHoSo(hoSoId, "Phân công", ghiChu, null, userId);
+                repo.AddQuaTrinhXuLyHoSo(hoSoId, "Phân công", ghiChu, null, idlanhdao);
             }
 
             // Cập nhật trạng thái hồ sơ sang đã phân công (IdTrangThai = 2)
@@ -415,6 +416,7 @@ namespace HanhChinhCong.Controllers
                     if (hoSo != null)
                     {
                         hoSo.IdCanBoXuLy = userId;
+                        hoSo.IdLanhDao = idlanhdao;
                         hoSo.IdTrangThai = 2;//  chờ xử lý
                         context.SaveChanges();
                     }
@@ -431,7 +433,7 @@ namespace HanhChinhCong.Controllers
             try
             {
                 var hoSoId = Convert.ToInt32(Request.Form["hoSoId"]);
-                var userId = Convert.ToInt32(Request.Form["userId"]);
+                //var userId = Convert.ToInt32(Request.Form["userId"]);
                 var ghiChuXuLy = Request.Form["ghiChuXuLy"];
                 var files = Request.Files;
                 var repo = new HoSoRepository();
@@ -472,7 +474,7 @@ namespace HanhChinhCong.Controllers
                     var hoSo = context.HoSo.FirstOrDefault(h => h.Id == hoSoId);
                     if (hoSo != null)
                     {
-                        hoSo.IdCanBoXuLy = userId;
+                        hoSo.IdCanBoXuLy = idNguoiXuLy;
                         hoSo.IdTrangThai = 3; // Chờ phê duyệt
                         context.SaveChanges();
                     }
@@ -494,7 +496,7 @@ namespace HanhChinhCong.Controllers
             try
             {
                 var hoSoId = Convert.ToInt32(Request.Form["hoSoId"]);
-                var userId = Convert.ToInt32(Request.Form["userId"]);
+                //var userId = Convert.ToInt32(Request.Form["userId"]);
                 var ghiChuDuyet = Request.Form["ghiChuDuyet"];
                 var files = Request.Files;
                 var repo = new HoSoRepository();
@@ -525,7 +527,7 @@ namespace HanhChinhCong.Controllers
                     repo.AddQuaTrinhXuLyHoSo(hoSoId, "Duyệt hồ sơ", ghiChuDuyet, null, idNguoiDuyet);
                 }
 
-                repo.DuyetKetQuaHoSo(hoSoId, ghiChuDuyet);
+                //repo.DuyetKetQuaHoSo(hoSoId, ghiChuDuyet);
 
                 // Cập nhật trạng thái hồ sơ sang "Chờ trả kết quả" (IdTrangThai = 4)
                 using (var context = new DbConnectContext())
@@ -533,7 +535,7 @@ namespace HanhChinhCong.Controllers
                     var hoSo = context.HoSo.FirstOrDefault(h => h.Id == hoSoId);
                     if (hoSo != null)
                     {
-                        hoSo.IdCanBoXuLy = userId;
+                        hoSo.IdLanhDao = idNguoiDuyet;
                         hoSo.IdTrangThai = 4; // Chờ trả kết quả
                         context.SaveChanges();
                     }
@@ -555,7 +557,7 @@ namespace HanhChinhCong.Controllers
             try
             {
                 var hoSoId = Convert.ToInt32(Request.Form["hoSoId"]);
-                var userId = Convert.ToInt32(Request.Form["userId"]);
+                
                 var ghiChuTraKetQua = Request.Form["ghiChuTraKetQua"];
                 var files = Request.Files;
                 var repo = new HoSoRepository();
@@ -586,7 +588,7 @@ namespace HanhChinhCong.Controllers
                     repo.AddQuaTrinhXuLyHoSo(hoSoId, "Trả kết quả", ghiChuTraKetQua, null, idNguoiTraKetQua);
                 }
 
-                repo.TraKetQuaHoSo(hoSoId, ghiChuTraKetQua);
+                //repo.TraKetQuaHoSo(hoSoId, ghiChuTraKetQua);
 
                 // Cập nhật trạng thái hồ sơ sang "trả kết quả" (IdTrangThai = 5)
                 using (var context = new DbConnectContext())
@@ -594,7 +596,7 @@ namespace HanhChinhCong.Controllers
                     var hoSo = context.HoSo.FirstOrDefault(h => h.Id == hoSoId);
                     if (hoSo != null)
                     {
-                        hoSo.IdCanBoXuLy = userId;
+                        hoSo.IdCanBoTraKetQua = idNguoiTraKetQua;
                         hoSo.IdTrangThai = 5; // trả kết quả
                         context.SaveChanges();
                     }
@@ -702,8 +704,37 @@ namespace HanhChinhCong.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        //Rút hồ sơ
+        [HttpPost]
+        public JsonResult RutHoSo(int hoSoId, string ghiChu)
+        {
+            try
+            {
+                using (var context = new DbConnectContext())
+                {
+                    var hoSo = context.HoSo.FirstOrDefault(h => h.Id == hoSoId);
+                    if (hoSo != null)
+                    {
+                        hoSo.IdTrangThai = 9; // 9: Đã rút hồ sơ
+                        if (!string.IsNullOrEmpty(hoSo.GhiChu))
+                            hoSo.GhiChu += "\n--- Rút hồ sơ: " + ghiChu;
+                        else
+                            hoSo.GhiChu = "Rút hồ sơ: " + ghiChu;
+                        context.SaveChanges();
+                    }
+                }
+                // Lưu vào bảng quá trình xử lý (nếu cần)
+                var repo = new HoSoRepository();
+                int? idNguoiThucHien = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
+                repo.AddQuaTrinhXuLyHoSo(hoSoId, "Rút hồ sơ", ghiChu, null, idNguoiThucHien);
 
-
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
 
         [HttpPost]

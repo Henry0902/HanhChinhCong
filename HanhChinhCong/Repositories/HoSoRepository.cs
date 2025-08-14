@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Security.Cryptography;
 using HanhChinhCong.Models;
 
 public class HoSoRepository
 {
     private readonly string connectionString;
-
+    private DbConnectContext db;
     public HoSoRepository()
     {
         connectionString = ConfigurationManager.ConnectionStrings["DbConnectContext"].ConnectionString;
     }
 
-    public List<HoSoInfo> SearchHoSoWithPaging(string searchName, string searchTenCongDan, string searchCMND_CCCD, int? searchIdTrangThai, int page, int pageSize, out int totalRows)
+    public List<HoSoInfo> SearchHoSoWithPaging(string searchMaHoSo, string searchName, string searchTenCongDan, string searchCMND_CCCD, bool? searchSapHetHan, int? searchIdTrangThai, int page, int pageSize, out int totalRows)
     {
         var list = new List<HoSoInfo>();
         totalRows = 0;
@@ -23,9 +25,11 @@ public class HoSoRepository
         using (var cmd = new SqlCommand("sp_SearchHoSoWithPaging", conn))
         {
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@SearchMaHoSo", searchMaHoSo ?? "");
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
             cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
             cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
+            cmd.Parameters.AddWithValue("@SearchSapHetHan", searchSapHetHan ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@SearchIdTrangThai", searchIdTrangThai ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@PageNumber", page);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
@@ -71,7 +75,16 @@ public class HoSoRepository
         return list;
     }
 
-   
+    public List<HoSo> SearchHoSoWithPagingLinq(string searchMaHoSo, string searchName, string searchTenCongDan, string searchCMND_CCCD, bool? searchSapHetHan, int? searchIdTrangThai, int page, int pageSize)
+    {
+        db = new DbConnectContext();
+        var result = db.HoSo.Where(x => x.IdTrangThai == 1).ToList();
+        //foreach (var item in result)
+        //{
+
+        //}
+        return result;
+    }
 
     public int AddHoSo(HoSo hoSo)
     {
@@ -262,6 +275,7 @@ public class HoSoRepository
         {
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@SearchMaHoSo", searchMaHoSo ?? "");
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
             cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
             cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
@@ -294,6 +308,8 @@ public class HoSoRepository
                         TenLoaiHoSo = reader["TenLoaiHoSo"] != DBNull.Value ? reader["TenLoaiHoSo"].ToString() : null,
                         // Nếu muốn lấy MaLoaiHoSo, bạn có thể thêm property vào HoSoInfo hoặc dùng dynamic
                         MaLoaiHoSo = reader["MaLoaiHoSo"] != DBNull.Value ? reader["MaLoaiHoSo"].ToString() : null,
+                        TenCanBoXuLy = reader["TenCanBoXuLy"] != DBNull.Value ? reader["TenCanBoXuLy"].ToString() : null,
+
                     });
                 }
                 if (reader.NextResult() && reader.Read())
@@ -316,6 +332,7 @@ public class HoSoRepository
         {
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@UserId", (object)userId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@SearchMaHoSo", searchMaHoSo ?? "");
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
             cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
             cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
@@ -347,6 +364,8 @@ public class HoSoRepository
                         TenLinhVuc = reader["TenLinhVuc"] != DBNull.Value ? reader["TenLinhVuc"].ToString() : null,
                         TenLoaiHoSo = reader["TenLoaiHoSo"] != DBNull.Value ? reader["TenLoaiHoSo"].ToString() : null,
                         MaLoaiHoSo = reader["MaLoaiHoSo"] != DBNull.Value ? reader["MaLoaiHoSo"].ToString() : null,
+                        TenCanBoXuLy = reader["TenCanBoXuLy"] != DBNull.Value ? reader["TenCanBoXuLy"].ToString() : null,
+
                     });
                 }
 

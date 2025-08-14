@@ -50,12 +50,26 @@ namespace HanhChinhCong.Controllers
         {
             // Lưu user vào database (Entity Framework hoặc ADO.NET)
             // Ví dụ:
+            // Kiểm tra trùng username
+            using (var db = new DbConnectContext())
+            {
+                if (db.User.Any(u => u.UserName == user.UserName))
+            {
+                return Json(new { success = false, message = "Tên đăng nhập đã tồn tại!" });
+            }
             context = new DbConnectContext();
             user.PassWord = BCrypt.Net.BCrypt.HashPassword(user.PassWord);
             context.User.Add(user);
             context.SaveChanges();
+                // Gán role cho user (bảng UserRole)
+                if (user.Role > 0)
+                {
+                    db.UserRole.Add(new UserRole { UserId = user.Id, RoleId = user.Role });
+                    db.SaveChanges();
+                }
 
-            return Json(new { success = true });
+                return Json(new { success = true });
+            }
         }
 
         [HttpPost]

@@ -8,6 +8,7 @@
     <h2 class="text-center">Trả kết quả hồ sơ</h2>
     <div class="col-md-12 mb-3">
         <form class="d-flex justify-content-end gap-2">
+            <input class="form-control" type="search" placeholder="Mã hồ sơ" ng-model="searchMaHoSo" />
             <input class="form-control" type="search" placeholder="Nhập tiêu đề hồ sơ" ng-model="searchName" />
             <input class="form-control" type="search" placeholder="Tên công dân" ng-model="searchTenCongDan" />
             <input class="form-control" type="search" placeholder="CMND/CCCD" ng-model="searchCMND_CCCD" />
@@ -30,6 +31,7 @@
                 <th>Người nộp</th>
                 <th>Số điện thoại</th>
                 <th>CMND/CCCD</th>
+                <th>Cán bộ xử lý</th>
                 <th>Trạng thái</th>
                 <th>Chức năng</th>
             </tr>
@@ -45,6 +47,7 @@
                 <td>{{item.TenCongDan}}</td>
                 <td>{{item.SoDienThoai}}</td>
                 <td>{{item.CMND_CCCD}}</td>
+                <td>{{item.TenCanBoXuLy}}</td>
                 <td>
                     <span ng-if="item.IdTrangThai == 4" class="badge bg-warning">Chờ trả kết quả</span>
                     <span ng-if="item.IdTrangThai == 5" class="badge bg-success">Đã trả kết quả</span>
@@ -88,8 +91,11 @@
                             <textarea class="form-control" ng-model="editingHoSo.GhiChuTraKetQua"></textarea>
                         </div>
                         <div class="mt-2">
-                            <label class="form-label">Đính kèm file kết quả</label>
+                            <label class="form-label">Đính kèm file kết quả<span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="fileTraKetQua" multiple onchange="angular.element(this).scope().onFileTraKetQuaChange(this.files)" />
+                            <div class="text-danger mt-1" ng-if="traKetQuaFileError">
+                                {{traKetQuaFileError}}
+                            </div>
                             <div class="mt-2" ng-if="selectedFilesTraKetQua.length">
                                 <strong>File đã chọn: {{selectedFilesTraKetQua.length}} file</strong>
                                 <ul>
@@ -97,11 +103,11 @@
                                         <button type="button" class="btn btn-sm btn-danger ms-2" ng-click="removeFileTraKetQua($index)">Xóa</button>
                                         <i ng-class="getFileIcon(f.name)" class="me-2"></i>
                                         {{f.name}}
-
                                     </li>
                                 </ul>
                             </div>
                         </div>
+
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary" type="button" ng-click="traKetQuaHoSo()">Xác nhận trả kết quả</button>

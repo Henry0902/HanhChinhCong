@@ -3,6 +3,7 @@
     $scope.searchName = '';
     $scope.searchTenCongDan = '';
     $scope.searchCMND_CCCD = '';
+    $scope.searchMaHoSo = '';
     $scope.page = 1;
     $scope.pageSize = 5;
     $scope.totalRows = 0;
@@ -48,6 +49,9 @@
                 AlertService && AlertService.show('success', 'Phân công hồ sơ thành công!');
                 $('#xacNhanSuaDoiBoSungModal').modal('hide');
                 $scope.loadData();
+                // Reset input file
+                var fileInput = document.getElementById('fileTraKetQua');
+                if (fileInput) fileInput.value = '';
             } else {
                 alert('Có lỗi xảy ra: ' + res.data.message);
             }
@@ -94,6 +98,9 @@
             if (res.data.success) {
                 $('#xuLyModal').modal('hide');
                 $scope.loadHoSo();
+                // Reset input file
+                var fileInput = document.getElementById('fileTraKetQua');
+                if (fileInput) fileInput.value = '';
                 AlertService && AlertService.show('success', 'Xử lý hồ sơ thành công!');
             } else {
                 AlertService && AlertService.show('danger', 'Xử lý hồ sơ thất bại!');
@@ -105,6 +112,7 @@
     $scope.loadHoSo = function () {
         $http.get('/HoSo/GetHoSoPhanCongXuLy', {
             params: {
+                searchMaHoSo: $scope.searchMaHoSo,
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
