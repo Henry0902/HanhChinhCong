@@ -266,7 +266,7 @@ public class HoSoRepository
     }
 
 
-    public List<HoSoInfo> GetHoSoDaXuLyByUser( int userId,string searchMaHoSo, string searchName,  string searchTenCongDan, string searchCMND_CCCD,  int? searchIdTrangThai,  int page, int pageSize,  out int totalRows)
+    public List<HoSoInfo> GetHoSoDaXuLyByUser( int userId,string searchMaHoSo, string searchName,  string searchTenCongDan, string searchCMND_CCCD, bool? searchSapHetHan, int? searchIdTrangThai,  int page, int pageSize,  out int totalRows)
     {
         var result = new List<HoSoInfo>();
         totalRows = 0;

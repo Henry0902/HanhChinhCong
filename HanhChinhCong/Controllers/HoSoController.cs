@@ -613,7 +613,7 @@ namespace HanhChinhCong.Controllers
 
         //lấy hồ sơ phân công theo cán bộ xử lý
         [HttpGet]
-        public JsonResult GetHoSoPhanCongXuLy(string searchMaHoSo = "", string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "", int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
+        public JsonResult GetHoSoPhanCongXuLy(string searchMaHoSo = "", string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "", bool? searchSapHetHan = null, int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
         {
             var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
             if (userId == null)
@@ -627,7 +627,7 @@ namespace HanhChinhCong.Controllers
 
             int totalRows;
             var repo = new HoSoRepository();
-            var data = repo.GetHoSoPhanCongXuLy( isAdmin ? (int?)null : userId, searchMaHoSo, searchName, searchTenCongDan,  searchCMND_CCCD,  searchIdTrangThai,   page,  pageSize,   out totalRows  );
+            var data = repo.GetHoSoPhanCongXuLy( isAdmin ? (int?)null : userId, searchMaHoSo, searchName, searchTenCongDan,  searchCMND_CCCD, searchSapHetHan,  searchIdTrangThai,   page,  pageSize,   out totalRows  );
 
             return Json(new
             {
@@ -684,7 +684,7 @@ namespace HanhChinhCong.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetHoSoDaXuLyByUser(string searchMaHoSo = "", string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "",  int? searchIdTrangThai = null, int page = 1,   int pageSize = 5)
+        public JsonResult GetHoSoDaXuLyByUser(string searchMaHoSo = "", string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "", bool? searchSapHetHan = null, int? searchIdTrangThai = null, int page = 1,   int pageSize = 5)
         {
             var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
             if (userId == null)
@@ -692,7 +692,7 @@ namespace HanhChinhCong.Controllers
 
             int totalRows;
             var repo = new HoSoRepository();
-            var data = repo.GetHoSoDaXuLyByUser(userId.Value, searchMaHoSo,    searchName,    searchTenCongDan,  searchCMND_CCCD,    searchIdTrangThai,    page,   pageSize,  out totalRows
+            var data = repo.GetHoSoDaXuLyByUser(userId.Value, searchMaHoSo,    searchName,    searchTenCongDan,  searchCMND_CCCD, searchSapHetHan, searchIdTrangThai,    page,   pageSize,  out totalRows
             );
 
             return Json(new
