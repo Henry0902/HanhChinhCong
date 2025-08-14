@@ -374,6 +374,10 @@ namespace HanhChinhCong.Controllers
             var ghiChu = Request.Form["ghiChu"];
             var files = Request.Files;
             var repo = new HoSoRepository();
+
+            // Lấy Id người xử lý từ session
+            var idlanhdao = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
+
             bool success = false;
             bool hasFile = false;
 
@@ -604,9 +608,10 @@ namespace HanhChinhCong.Controllers
             }
         }
 
+
         //lấy hồ sơ phân công theo cán bộ xử lý
         [HttpGet]
-        public JsonResult GetHoSoPhanCongXuLy(string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "", int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
+        public JsonResult GetHoSoPhanCongXuLy(string searchMaHoSo = "", string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "", int? searchIdTrangThai = null, int page = 1, int pageSize = 5)
         {
             var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
             if (userId == null)
@@ -620,7 +625,7 @@ namespace HanhChinhCong.Controllers
 
             int totalRows;
             var repo = new HoSoRepository();
-            var data = repo.GetHoSoPhanCongXuLy( isAdmin ? (int?)null : userId, searchName, searchTenCongDan,  searchCMND_CCCD,  searchIdTrangThai,   page,  pageSize,   out totalRows  );
+            var data = repo.GetHoSoPhanCongXuLy( isAdmin ? (int?)null : userId, searchMaHoSo, searchName, searchTenCongDan,  searchCMND_CCCD,  searchIdTrangThai,   page,  pageSize,   out totalRows  );
 
             return Json(new
             {
@@ -666,14 +671,18 @@ namespace HanhChinhCong.Controllers
 
                 // Đếm số hồ sơ đã có của loại này
                 int count = db.HoSo.Count(h => h.IdLoaiHoSo == idLoaiHoSo) + 1;
-                // Ví dụ mã: LOAI-[ID]-[SỐ THỨ TỰ]
-                string maHoSo = $"{loaiHoSo.MaLoaiHoSo ?? "LH"}-{idLoaiHoSo}-{count:D4}";
+
+                // Lấy ngày hiện tại theo định dạng yyyyMMdd
+                string datePart = DateTime.Now.ToString("yyyyMMdd");
+
+                // Ví dụ mã: [MaLoaiHoSo]-[yyyyMMdd]-[SốThứTự]
+                string maHoSo = $"{loaiHoSo.MaLoaiHoSo ?? "LH"}-{datePart}-{count:D4}";
                 return Json(new { maHoSo = maHoSo }, JsonRequestBehavior.AllowGet);
             }
         }
 
         [HttpGet]
-        public JsonResult GetHoSoDaXuLyByUser(  string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "",  int? searchIdTrangThai = null, int page = 1,   int pageSize = 5)
+        public JsonResult GetHoSoDaXuLyByUser(string searchMaHoSo = "", string searchName = "", string searchTenCongDan = "", string searchCMND_CCCD = "",  int? searchIdTrangThai = null, int page = 1,   int pageSize = 5)
         {
             var userId = Session["UserId"] != null ? Convert.ToInt32(Session["UserId"]) : (int?)null;
             if (userId == null)
@@ -681,7 +690,7 @@ namespace HanhChinhCong.Controllers
 
             int totalRows;
             var repo = new HoSoRepository();
-            var data = repo.GetHoSoDaXuLyByUser(    userId.Value,    searchName,    searchTenCongDan,  searchCMND_CCCD,    searchIdTrangThai,    page,   pageSize,  out totalRows
+            var data = repo.GetHoSoDaXuLyByUser(userId.Value, searchMaHoSo,    searchName,    searchTenCongDan,  searchCMND_CCCD,    searchIdTrangThai,    page,   pageSize,  out totalRows
             );
 
             return Json(new

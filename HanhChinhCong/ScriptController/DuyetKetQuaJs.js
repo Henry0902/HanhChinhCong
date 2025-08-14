@@ -15,6 +15,10 @@
     $scope.detailHoSo = {};
     $scope.detailQuaTrinh = [];
 
+    // Khi load lần đầu
+    $scope.searchSapHetHan = null;
+
+
     $scope.showDuyetModal = function (item) {
         $scope.editingHoSo = angular.copy(item);
         $scope.editingHoSo.GhiChuDuyet = '';
@@ -154,19 +158,47 @@
                 searchName: $scope.searchName,
                 searchTenCongDan: $scope.searchTenCongDan,
                 searchCMND_CCCD: $scope.searchCMND_CCCD,
+                searchSapHetHan: $scope.searchSapHetHan,
                 searchIdTrangThai: 3,
                 page: $scope.page,
                 pageSize: $scope.pageSize
             }
         }).then(function (res) {
-            res.data.data.forEach(function (item) {
+            var dataArr = [];
+            if (res.data && Array.isArray(res.data.data)) {
+                dataArr = res.data.data;
+                $scope.totalRows = res.data.totalRows || dataArr.length;
+            } else if (Array.isArray(res.data)) {
+                dataArr = res.data;
+                $scope.totalRows = dataArr.length;
+            } else {
+                dataArr = [];
+                $scope.totalRows = 0;
+            }
+
+            // Xử lý ngày và đánh dấu sắp hết hạn cho từng item
+            dataArr.forEach(function (item) {
+                // Chuyển đổi ngày tiếp nhận
                 if (item.NgayTiepNhan) {
                     var d = parseDotNetDate(item.NgayTiepNhan);
                     item.NgayTiepNhan = (d instanceof Date && !isNaN(d.getTime())) ? formatDate(d) : "";
                 }
+                // Chuyển đổi hạn xử lý và tính sắp hết hạn
                 if (item.HanXuLy) {
                     var d = parseDotNetDate(item.HanXuLy);
                     item.HanXuLy = (d instanceof Date && !isNaN(d.getTime())) ? formatDate(d) : "";
+                    var hanXuLyDate = new Date(item.HanXuLy);
+                    var now = new Date();
+                    var hanXuLyDateOnly = new Date(hanXuLyDate.getFullYear(), hanXuLyDate.getMonth(), hanXuLyDate.getDate());
+                    var nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    var diffDaysOnly = (hanXuLyDateOnly - nowDateOnly) / (1000 * 60 * 60 * 24);
+                    item.SapHetHan = (
+                        (diffDaysOnly === 0 || (diffDaysOnly < 1 && diffDaysOnly > 0) || diffDaysOnly === 1)
+                        && diffDaysOnly >= 0
+                        && item.IdTrangThai != 5
+                    );
+                } else {
+                    item.SapHetHan = false;
                 }
             });
             $scope.listData = res.data.data;

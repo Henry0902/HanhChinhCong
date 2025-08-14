@@ -14,6 +14,12 @@
             <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
         </form>
     </div>
+
+    <span class="align-self-center ms-2">
+        <input type="checkbox" ng-model="searchSapHetHan" ng-change="search()" />
+        <span>Chỉ hiển thị hồ sơ sắp hết hạn xử lý</span>
+    </span>
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -29,7 +35,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in listData">
+            <tr ng-repeat="item in listData" ng-class="{'table-danger': item.SapHetHan}">
                 <td>{{$index + 1 + (page - 1) * pageSize}}</td>
                 <td>{{item.MaHoSo}}</td>
                 <td>
@@ -45,9 +51,23 @@
                     <span ng-if="item.IdTrangThai == 5" class="badge bg-primary">Đã trả kết quả</span>
                 </td>
                 <td>
-                    <button class="btn btn-success btn-sm" ng-if="item.IdTrangThai == 3" ng-click="showDuyetModal(item)">Duyệt kết quả</button>
-                    <button class="btn btn-danger btn-sm" type="button" ng-click="showXuLyLaiHoSoModal(item)">Xử lý lại</button>
-                    @*<button class="btn btn-warning btn-sm" ng-click="xuLyLaiHoSo(item)">Xử lý lại</button>*@
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{$index}}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-cogs me-1"></i> Thao tác
+                        </button>
+                        <ul class="dropdown-menu shadow animated--grow-in" aria-labelledby="dropdownMenuButton{{$index}}" style="min-width: 160px;">
+                            <li ng-if="item.IdTrangThai == 3">
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="showDuyetModal(item)">
+                                    <i class="fa fa-check text-success me-2"></i> Duyệt kết quả
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="showXuLyLaiHoSoModal(item)">
+                                    <i class="fa fa-redo text-danger me-2"></i> Xử lý lại
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -221,3 +241,9 @@
     </div>
 
 </div>
+<style>
+    .dropdown-item:hover, .dropdown-item:focus {
+        background-color: #e0e0e0 !important; /* Xám đậm hơn */
+        color: #224abe;
+    }
+</style>

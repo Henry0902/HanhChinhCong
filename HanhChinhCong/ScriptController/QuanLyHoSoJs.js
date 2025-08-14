@@ -18,9 +18,12 @@
     $scope.trangThaiList = [];
     $scope.searchIdTrangThai = '';
 
+    //$scope.searchSapHetHan = ''; // hoặc '' nếu muốn có 3 trạng thái (tất cả/đúng/sai)
+
     $scope.isTiepNhan = !!window.IsTiepNhan;
 
-    console.log("adf:", $scope.isTiepNhan);
+    // Khi load lần đầu
+    $scope.searchSapHetHan = null;
 
     //lấy list trạng thái hồ sơ
     $http.get('/HoSo/GetTrangThaiHoSo').then(function (res) {

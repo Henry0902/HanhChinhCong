@@ -19,6 +19,12 @@
             <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
         </form>
     </div>
+
+    <span class="align-self-center ms-2">
+        <input type="checkbox" ng-model="searchSapHetHan" ng-change="search()" />
+        <span>Chỉ hiển thị hồ sơ sắp hết hạn xử lý</span>
+    </span>
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -34,7 +40,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in listData">
+            <tr ng-repeat="item in listData" ng-class="{'table-danger': item.SapHetHan}">
                 <td>{{$index + 1 + (page - 1) * pageSize}}</td>
                 <td>{{item.MaHoSo}}</td>
                 <td>
@@ -53,9 +59,9 @@
                     <span ng-if="item.IdTrangThai == 6" class="badge bg-danger">Sửa đổi bổ sung</span>
                 </td>
                 @*<td>
-                    <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)">Sửa</button>
-                    <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)">Xóa</button>
-                </td>*@
+                        <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)">Sửa</button>
+                        <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)">Xóa</button>
+                    </td>*@
             </tr>
         </tbody>
     </table>

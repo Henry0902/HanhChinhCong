@@ -15,6 +15,12 @@
             <button class="btn btn-outline-success" type="button" ng-click="search()">Tìm kiếm</button>
         </form>
     </div>
+
+    <span class="align-self-center ms-2">
+        <input type="checkbox" ng-model="searchSapHetHan" ng-change="search()" />
+        <span>Chỉ hiển thị hồ sơ sắp hết hạn xử lý</span>
+    </span>
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -30,7 +36,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in listData">
+            <tr ng-repeat="item in listData" ng-class="{'table-danger': item.SapHetHan}">
                 <td>{{$index + 1 + (page - 1) * pageSize}}</td>
                 <td>{{item.MaHoSo}}</td>
                 <td>
@@ -49,9 +55,23 @@
                     <span ng-if="item.IdTrangThai == 6" class="badge bg-danger">Sửa đổi bổ sung</span>
                 </td>
                 <td>
-                    <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)">Sửa đổi, bổ sung</button>
-
-                    <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)">Xóa</button>
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{$index}}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-cogs me-1"></i> Thao tác
+                        </button>
+                        <ul class="dropdown-menu shadow animated--grow-in" aria-labelledby="dropdownMenuButton{{$index}}" style="min-width: 160px;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="showEditModal(item)">
+                                    <i class="fa fa-edit text-warning me-2"></i> Sửa đổi, bổ sung
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="deleteItem(item.Id)">
+                                    <i class="fa fa-trash text-danger me-2"></i> Xóa
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -306,4 +326,10 @@
     </div>
 
 </div>
+<style>
+    .dropdown-item:hover, .dropdown-item:focus {
+        background-color: #e0e0e0 !important; /* Xám đậm hơn */
+        color: #224abe;
+    }
+</style>
 

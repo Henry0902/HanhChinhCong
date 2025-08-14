@@ -253,7 +253,7 @@ public class HoSoRepository
     }
 
 
-    public List<HoSoInfo> GetHoSoDaXuLyByUser( int userId, string searchName,  string searchTenCongDan, string searchCMND_CCCD,  int? searchIdTrangThai,  int page, int pageSize,  out int totalRows)
+    public List<HoSoInfo> GetHoSoDaXuLyByUser( int userId,string searchMaHoSo, string searchName,  string searchTenCongDan, string searchCMND_CCCD,  int? searchIdTrangThai,  int page, int pageSize,  out int totalRows)
     {
         var result = new List<HoSoInfo>();
         totalRows = 0;
@@ -265,6 +265,7 @@ public class HoSoRepository
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
             cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
             cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
+            cmd.Parameters.AddWithValue("@SearchSapHetHan", (object)searchSapHetHan ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@SearchIdTrangThai", searchIdTrangThai ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@PageNumber", page);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
@@ -306,7 +307,7 @@ public class HoSoRepository
 
 
     //lấy hồ sơ theo cán bộ xử lý
-    public List<HoSoInfo> GetHoSoPhanCongXuLy(int? userId, string searchName, string searchTenCongDan, string searchCMND_CCCD, int? searchIdTrangThai, int page, int pageSize, out int totalRows)
+    public List<HoSoInfo> GetHoSoPhanCongXuLy(int? userId, string searchMaHoSo, string searchName, string searchTenCongDan, string searchCMND_CCCD, bool? searchSapHetHan, int? searchIdTrangThai, int page, int pageSize, out int totalRows)
     {
         var result = new List<HoSoInfo>();
         totalRows = 0;
@@ -318,6 +319,7 @@ public class HoSoRepository
             cmd.Parameters.AddWithValue("@SearchName", searchName ?? "");
             cmd.Parameters.AddWithValue("@SearchTenCongDan", searchTenCongDan ?? "");
             cmd.Parameters.AddWithValue("@SearchCMND_CCCD", searchCMND_CCCD ?? "");
+            cmd.Parameters.AddWithValue("@SearchSapHetHan", (object)searchSapHetHan ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@SearchIdTrangThai", searchIdTrangThai ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@PageNumber", page);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);

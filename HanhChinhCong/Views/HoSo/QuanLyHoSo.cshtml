@@ -59,11 +59,38 @@
                     <span ng-if="item.IdTrangThai == 6" class="badge bg-danger">Sửa đổi bổ sung</span>
                 </td>
                 <td>
-                    <button class="btn btn-warning btn-sm" ng-click="showEditModal(item)" ng-if="!isTiepNhan">Sửa</button>
-
-                    <button class="btn btn-danger btn-sm" ng-click="deleteItem(item.Id)" ng-if="!isTiepNhan">Xóa</button>
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{$index}}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-cogs me-1"></i> Thao tác
+                        </button>
+                        <ul class="dropdown-menu shadow animated--grow-in" aria-labelledby="dropdownMenuButton{{$index}}" style="min-width: 160px;">
+                            <li ng-if="!isTiepNhan">
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="showEditModal(item)">
+                                    <i class="fa fa-edit text-warning me-2"></i> Sửa
+                                </a>
+                            </li>
+                            <li ng-if="!isTiepNhan">
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="deleteItem(item.Id)">
+                                    <i class="fa fa-trash text-danger me-2"></i> Xóa
+                                </a>
+                            </li>
+                            <li ng-if="item.IdTrangThai != 9">
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="showRutHoSoModal(item)">
+                                    <i class="fa fa-undo text-secondary me-2"></i> Rút hồ sơ
+                                </a>
+                            </li>
+                            <li ng-if="item.IdTrangThai == 9">
+                                <a class="dropdown-item d-flex align-items-center" href="#" ng-click="showEditModal(item)">
+                                    <i class="fa fa-upload text-success me-2"></i> Nộp lại hồ sơ
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </td>
+
+
             </tr>
+
         </tbody>
     </table>
     <nav>
@@ -305,7 +332,9 @@
                                 <td>{{qt.NgayThucHien | date:'dd/MM/yyyy HH:mm'}}</td>
                                 <td>{{qt.TenNguoiThucHien}}</td>
                             </tr>
+
                         </tbody>
+
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -315,5 +344,12 @@
         </div>
     </div>
 
+
 </div>
+<style>
+    .dropdown-item:hover, .dropdown-item:focus {
+        background-color: #e0e0e0 !important; /* Xám đậm hơn */
+        color: #224abe;
+    }
+</style>
 
