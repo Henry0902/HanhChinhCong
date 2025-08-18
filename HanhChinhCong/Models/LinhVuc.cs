@@ -12,7 +12,8 @@ namespace HanhChinhCong.Models
         public int Id { get; set; }
         public string TenLinhVuc { get; set; }
         public int IdPhongBan { get; set; }
-       
+        public bool Active { get; set; }
+
     }
 
     public class LinhVucViewModel
@@ -21,6 +22,7 @@ namespace HanhChinhCong.Models
         public string TenLinhVuc { get; set; }
         public int IdPhongBan { get; set; }
         public string TenPhongBan { get; set; }
+        public bool Active { get; set; }
         // Thêm các trường khác nếu cần
     }
 

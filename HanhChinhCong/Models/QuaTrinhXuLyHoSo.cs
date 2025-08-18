@@ -11,6 +11,7 @@ public class QuaTrinhXuLyHoSo
     public string FileDinhKem { get; set; }    // Đường dẫn file hoặc nhiều file phân cách dấu phẩy
     public DateTime NgayThucHien { get; set; }
     public int? IdNguoiThucHien { get; set; }
+
 }
 
 public class QuaTrinhXuLyHoSoInfo

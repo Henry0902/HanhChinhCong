@@ -52,7 +52,10 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in listData" ng-class="{'table-danger': item.SapHetHan}">
+            <tr ng-repeat="item in listData"  ng-class="{
+                    'table-warning': (item.TrangThaiHetHan == 1 && item.IdTrangThai != 5 && item.IdTrangThai != 9),
+                    'table-danger': (item.TrangThaiHetHan == 2 && item.IdTrangThai != 5 && item.IdTrangThai != 9)
+                }">>
                 <td>{{$index + 1 + (page - 1) * pageSize}}</td>
                 <td>{{item.MaHoSo}}</td>
                 <td>

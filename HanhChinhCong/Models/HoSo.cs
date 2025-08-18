@@ -31,6 +31,7 @@ namespace HanhChinhCong.Models
         public int? IdCanBoXuLy { get; set; }
         public int? IdLanhDao { get; set; }
         public int? IdCanBoTraKetQua { get; set; }
+        public bool Active { get; set; }
 
 
     }
@@ -65,9 +66,9 @@ namespace HanhChinhCong.Models
         public string TenCanBoXuLy { get; set; }
         public string TenLanhDao { get; set; }
         public string TenCanBoTraKetQua { get; set; }
-
         public string MaLoaiHoSo { get; set; }
-
+        public bool Active { get; set; }
+        public int TrangThaiHetHan { get; set; }
     }
 
     public class HoSoDaXuLyViewModel
@@ -85,6 +86,7 @@ namespace HanhChinhCong.Models
         public string Buoc { get; set; }
         public DateTime? NgayXuLy { get; set; }
         public string GhiChu { get; set; }
+        public bool Active { get; set; }
     }
 
 

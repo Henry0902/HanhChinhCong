@@ -82,14 +82,38 @@
 
             <div class="col-md-4">
                 <label class="form-label">Ngày tiếp nhận <span class="text-danger">*</span></label>
-                <input type="date" class="form-control" ng-model="hoSo.NgayTiepNhan" ng-value="hoSo.NgayTiepNhan" required>
+                <input type="date" class="form-control"  ng-model="hoSo.NgayTiepNhan" ng-value="hoSo.NgayTiepNhan" required>
                 <div class="invalid-feedback">Vui lòng chọn ngày tiếp nhận.</div>
             </div>
+
+            @*<div class="col-md-4">
+                <label class="form-label">Ngày tiếp nhận <span class="text-danger">*</span></label>
+                <input type="text"
+                       class="form-control date-picker"
+                       ng-model="hoSo.NgayTiepNhan"
+                       required
+                       autocomplete="off" />
+                <div class="invalid-feedback">Vui lòng chọn ngày tiếp nhận.</div>
+            </div>*@
+
+
             <div class="col-md-4">
                 <label class="form-label">Hạn xử lý <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" ng-model="hoSo.HanXuLy" required>
                 <div class="invalid-feedback">Vui lòng chọn hạn xử lý.</div>
             </div>
+
+            @*<div class="col-md-4">
+                <label class="form-label">Hạn xử lý <span class="text-danger">*</span></label>
+                <input type="text"
+                       class="form-control date-picker"
+                       ng-model="hoSo.HanXuLy"
+                       required
+                       autocomplete="off" />
+                <div class="invalid-feedback">Vui lòng chọn hạn xử lý.</div>
+            </div>*@
+
+
             @*<div class="col-md-4">
             <label class="form-label">Ngày hoàn thành</label>
             <input type="date" class="form-control" ng-model="hoSo.NgayHoanThanh" required>
@@ -130,3 +154,22 @@
         </form>
     </div>
 </div>
+<script src="~/Content/assets/js/bootstrap-datepicker.min.js"></script>
+<script src="~/Content/assets/js/bootstrap-timepicker.min.js"></script>
+<link href="~/Content/assets/css/datepicker.min.css" rel="stylesheet" />
+<script>
+    $('.date-picker').datepicker({
+        autoclose: true,
+        todayHighlight: true,
+        format: "dd/mm/yyyy"
+    });
+    $('#DateOfBirth').datepicker();
+    $(function () {
+        $('#Mobile').on('keydown', function (e) {
+            -1 !== $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) || /65|67|86|88/.test(e.keyCode)
+                && (!0 === e.ctrlKey || !0 === e.metaKey) || 35 <= e.keyCode
+                && 40 >= e.keyCode || (e.shiftKey || 48 > e.keyCode || 57 < e.keyCode) && (96 > e.keyCode || 105 < e.keyCode)
+                && e.preventDefault();
+        });
+    });
+</script>

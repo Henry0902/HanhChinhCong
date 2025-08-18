@@ -135,8 +135,6 @@ namespace HanhChinhCong.Controllers
             var repo = new HoSoRepository();
             int totalRows;
             var data = repo.SearchHoSoWithPaging(searchMaHoSo, searchName, searchTenCongDan, searchCMND_CCCD, searchSapHetHan, searchIdTrangThai, page, pageSize, out totalRows);
-            //var data = repo.SearchHoSoWithPagingLinq(searchMaHoSo, searchName, searchTenCongDan, searchCMND_CCCD, searchSapHetHan, searchIdTrangThai, page, pageSize);
-            //totalRows = data.Count;
             return Json(new
             {
                 data = data,

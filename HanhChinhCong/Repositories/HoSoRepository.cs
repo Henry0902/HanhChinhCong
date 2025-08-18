@@ -64,6 +64,8 @@ public class HoSoRepository
                         TenCanBoTiepNhan = reader["TenCanBoTiepNhan"].ToString(),
                         IdCanBoXuLy = reader["IdCanBoXuLy"] as int?,
                         TenCanBoXuLy = reader["TenCanBoXuLy"].ToString(),
+                        TrangThaiHetHan = reader["TrangThaiHetHan"] != DBNull.Value ? Convert.ToInt32(reader["TrangThaiHetHan"]) : 0
+
                     });
                 }
                 if (reader.NextResult() && reader.Read())
